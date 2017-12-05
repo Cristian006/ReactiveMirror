@@ -1,4 +1,4 @@
-/*export function fade(opacity) {
+/*export function fade(opacity: number) {
   let op = opacity;  // initial opacity
   let timer = setInterval(() => {
     if (op <= 0.1) {

@@ -24,6 +24,8 @@ class Compliments extends Component {
     position: 'lower_third',
     updateInterval: 3000, /* 30000 */
     intervalId: null,
+    showHideId: null,
+    opacity: 0,
     fadeSpeed: 1000, /* 4000 */
     currentWeatherType: '',
     compliments: defaultCompliments,
@@ -104,7 +106,7 @@ class Compliments extends Component {
 
   render() {
     return (
-      <div className={styles.container}>
+      <div className={styles.container} style={{ transition: `opacity ${this.state.fadeSpeed / 1000}s` }}>
         {this.state.currentCompliments[this.state.complimentIndex]}
       </div>
     );

@@ -1,5 +1,7 @@
 @import "~font-awesome/css/font-awesome.css";
 @import url('https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto:400,500,900');
+@import url('./mirror/styles/main.css');
+@import url('./mirror/styles/custom.css');
 
 html {
   cursor: default;
@@ -28,8 +30,4 @@ body {
   overflow: hidden;
   cursor: inherit;
   display: block;
-}
-
-::-webkit-scrollbar {
-  display: none;
 }

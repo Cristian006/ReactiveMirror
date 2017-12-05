@@ -13,6 +13,7 @@
 import { app, BrowserWindow } from 'electron';
 import MenuBuilder from './menu';
 
+const config =  process.env.MIRROR_CONFIG ? JSON.parse(process.env.MIRROR_CONFIG) : {};
 let mainWindow = null;
 
 if (process.env.NODE_ENV === 'production') {
@@ -60,9 +61,17 @@ app.on('ready', async () => {
   }
 
   mainWindow = new BrowserWindow({
+    x: 0,
+    y: 0,
     show: false,
-    width: 1024,
-    height: 728
+    width: 800,
+    height: 600,
+    darkTheme: true,
+    backgroundColor: '#000000',
+    webPreferences: {
+      nodeIntegration: false,
+//      zoomFactor: config.zoom
+    }
   });
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
@@ -80,6 +89,22 @@ app.on('ready', async () => {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
+  if (config.kiosk) {
+		mainWindow.on("blur", function() {
+			mainWindow.focus();
+		});
+
+		mainWindow.on("leave-full-screen", function() {
+			mainWindow.setFullScreen(true);
+		});
+
+		mainWindow.on("resize", function() {
+			setTimeout(function() {
+				mainWindow.reload();
+			}, 1000);
+		});
+	}
 
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
