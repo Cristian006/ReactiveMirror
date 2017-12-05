@@ -59,7 +59,7 @@ app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
   }
-
+  
   mainWindow = new BrowserWindow({
     x: 0,
     y: 0,
@@ -69,8 +69,7 @@ app.on('ready', async () => {
     darkTheme: true,
     backgroundColor: '#000000',
     webPreferences: {
-      nodeIntegration: false,
-//      zoomFactor: config.zoom
+      zoomFactor: config.zoom
     }
   });
 

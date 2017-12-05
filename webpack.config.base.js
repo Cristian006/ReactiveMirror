@@ -44,7 +44,7 @@ export default {
 
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.MIRROR_CONFIG': JSON.stringify(process.env.MIRROR_CONFIG || {...defaults, ...config}),
+      'process.env.MIRROR_CONFIG': JSON.stringify(process.env.MIRROR_CONFIG || { ...defaults, ...config }),
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
     }),
 
