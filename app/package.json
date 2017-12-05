@@ -1,18 +1,19 @@
 {
-  "name": "electron-react-boilerplate",
-  "productName": "electron-react-boilerplate",
-  "version": "1.0.0",
-  "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
+  "name": "reactive-mirror",
+  "productName": "Reactive Mirror",
+  "version": "0.1.0",
+  "description": "Electron React Mirror App for Raspberry Pi",
   "main": "./main.prod.js",
   "author": {
-    "name": "C. T. Lin",
-    "email": "chentsulin@gmail.com",
-    "url": "https://github.com/chentsulin"
+    "name": "Cristian Ponce",
+    "email": "cristianrponce06@gmail.com",
+    "url": "https://github.com/cristian006"
   },
   "scripts": {
     "postinstall": "npm rebuild --runtime=electron --target=1.6.6 --disturl=https://atom.io/download/atom-shell --build-from-source"
   },
   "license": "MIT",
   "dependencies": {
+    "moment": "^2.19.3"
   }
 }

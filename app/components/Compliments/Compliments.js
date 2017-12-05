@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import styles from './Compliments.css';
-import { defaultCompliments, getRandom, complimentFile } from './utils/util';
-import { getConfig } from '../../mirror/utils/utils';
+import { defaultCompliments, getRandom, complimentFile } from './core/utils';
+import { getConfig } from '../../mirror/core/utils';
 
 class Compliments extends Component {
 
