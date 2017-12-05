@@ -1,0 +1,35 @@
+@import "~font-awesome/css/font-awesome.css";
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto:400,500,900');
+
+html {
+  cursor: default;
+  -webkit-user-select: none;
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 60px;
+  position: absolute;
+  height: calc(100% - 120px);
+  width: calc(100% - 120px);
+  background: #000;
+  color: #aaa;
+  font-family: 'Roboto Condensed', 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 2em;
+  line-height: 1.5em;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  cursor: inherit;
+  display: block;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
