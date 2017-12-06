@@ -16,12 +16,6 @@ import MenuBuilder from './menu';
 const config = process.env.MIRROR_CONFIG ? { ...process.env.MIRROR_CONFIG } : {};
 let mainWindow = null;
 
-const productionWindow = {
-  frameless: true,
-  fullscreen: true,
-  autoHideMenuBar: true
-};
-
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -65,6 +59,12 @@ app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
   }
+
+  const productionWindow = {
+    frameless: true,
+    fullscreen: true,
+    autoHideMenuBar: true
+  };
 
   mainWindow = new BrowserWindow({
     x: 0,

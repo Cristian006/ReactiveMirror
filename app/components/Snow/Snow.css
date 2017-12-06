@@ -1,0 +1,32 @@
+.Snow .snowFlake {
+  position: absolute;
+  top: -20px;
+  animation-name: snowDrop;
+  animation-iteration-count: infinite;
+}
+
+.Snow .snowFlake .flake {
+  width: 20px;
+  height: 20px;
+
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  animation-name: snowJiggle;
+  animation-iteration-count: infinite;
+}
+
+@keyframes snowDrop {
+  from {transform: translateY(0vh)}
+  to {transform: translateY(calc(100vh + 20px))}
+}
+
+@keyframes snowJiggle {
+  0% {transform: translateX(0vw)}
+  20% {transform: translateX(20vw)}
+  30% {transform: translateX(5vw)}
+  50% {transform: translateX(25vw)}
+  70% {transform: translateX(0vw)}
+  85% {transform: translateX(15vw)}
+  100% {transform: translateX(0vw)}
+}

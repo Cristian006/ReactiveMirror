@@ -6,13 +6,6 @@
 html {
   cursor: none;
   -webkit-user-select: none;
-  box-sizing: border-box;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
 }
 
 body {
@@ -27,7 +20,6 @@ body {
   font-size: 2em;
   line-height: 1.5em;
   -webkit-font-smoothing: antialiased;
-  overflow: hidden;
   cursor: inherit;
   display: block;
 }

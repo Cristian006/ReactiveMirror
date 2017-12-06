@@ -52,10 +52,6 @@ class Compliments extends Component {
     });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-
-  }
-
   componentWillUnmount() {
     clearInterval(this.state.intervalId);
     clearTimeout(this.state.showHideTimer);
@@ -128,7 +124,7 @@ class Compliments extends Component {
   }
 
   render() {
-    console.log(this.state.opacity);
+    //console.log(this.state.opacity);
     return (
       <div className={styles.container} style={{ transition: `opacity ${(this.state.fadeSpeed / 2)}ms ${this.state.animation}`, opacity: this.state.opacity }}>
         {this.state.currentCompliments[this.state.complimentIndex]}
