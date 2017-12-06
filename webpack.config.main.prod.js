@@ -8,6 +8,8 @@ import BabiliPlugin from 'babili-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import baseConfig from './webpack.config.base';
 import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
+import defaults from './app/mirror/config/defaults';
+import config from './app/mirror/config/config';
 
 CheckNodeEnv('production');
 
@@ -45,6 +47,7 @@ export default merge.smart(baseConfig, {
      * development checks
      */
     new webpack.DefinePlugin({
+      'process.env.MIRROR_CONFIG': JSON.stringify(process.env.MIRROR_CONFIG || { ...defaults, ...config }),
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
       'process.env.DEBUG_PROD': JSON.stringify(process.env.DEBUG_PROD || 'false')
     })

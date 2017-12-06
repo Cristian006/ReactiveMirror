@@ -18,42 +18,61 @@ class Compliments extends Component {
         });
       });
     }
+
+    this.updateCompliments = this.updateCompliments.bind(this);
+    this.hideShowModule = this.hideShowModule.bind(this);
+    this.randomIndex = this.randomIndex.bind(this);
+    this.complimentArray = this.complimentArray.bind(this);
   }
 
   state = {
     position: 'lower_third',
-    updateInterval: 3000, /* 30000 */
-    intervalId: null,
-    showHideId: null,
+    animation: 'ease-in',
     opacity: 0,
-    fadeSpeed: 1000, /* 4000 */
+    intervalId: null,
+    showHideTimer: null,
+    fadeSpeed: 4000,
+    updateInterval: 30000,
+    complimentIndex: 0,
     currentWeatherType: '',
+    lastComplimentIndex: -1,
     compliments: defaultCompliments,
     currentCompliments: [],
-    complimentIndex: 0,
-    lastComplimentIndex: -1
+    hidden: true,
   };
 
   componentDidMount() {
+    this.updateCompliments();
     let id = setInterval(() => {
       this.updateCompliments();
     }, this.state.updateInterval);
-    
     this.setState({
       intervalId: id,
       ...this.mod.config,
     });
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    return (
-      nextState.complimentIndex !== this.state.complimentIndex ||
-      nextState.currentCompliments !== this.state.currentCompliments
-    );
+  componentDidUpdate(prevProps, prevState) {
+
   }
 
   componentWillUnmount() {
     clearInterval(this.state.intervalId);
+    clearTimeout(this.state.showHideTimer);
+  }
+
+  hideShowModule(hide: boolean, callback: any) {
+    this.setState({
+      opacity: hide ? 0 : 1,
+      hidden: hide
+    });
+    if (hide && callback) {
+      this.setState({
+        showHideTimer: setTimeout(() => { callback(); }, this.state.fadeSpeed / 2),
+      });
+    } else {
+      clearTimeout(this.state.showHideTimer);
+    }
   }
 
   randomIndex() {
@@ -98,21 +117,26 @@ class Compliments extends Component {
   }
 
   updateCompliments() {
-    this.setState({
-      complimentIndex: this.randomIndex(),
-      currentCompliments: this.complimentArray()
+    this.hideShowModule(true, () => {
+      this.setState({
+        complimentIndex: this.randomIndex(),
+        currentCompliments: this.complimentArray(),
+      }, () => {
+        this.hideShowModule(false);
+      });
     });
   }
 
   render() {
+    console.log(this.state.opacity);
     return (
-      <div className={styles.container} style={{ transition: `opacity ${this.state.fadeSpeed / 1000}s` }}>
+      <div className={styles.container} style={{ transition: `opacity ${(this.state.fadeSpeed / 2)}ms ${this.state.animation}`, opacity: this.state.opacity }}>
         {this.state.currentCompliments[this.state.complimentIndex]}
       </div>
     );
   }
 }
 
-Compliments.moduleName = 'Compliments';
+Compliments.moduleName = 'compliments';
 
 export default Compliments;

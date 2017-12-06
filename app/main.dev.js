@@ -13,8 +13,14 @@
 import { app, BrowserWindow } from 'electron';
 import MenuBuilder from './menu';
 
-const config =  process.env.MIRROR_CONFIG ? JSON.parse(process.env.MIRROR_CONFIG) : {};
+const config = process.env.MIRROR_CONFIG ? { ...process.env.MIRROR_CONFIG } : {};
 let mainWindow = null;
+
+const productionWindow = {
+  frameless: true,
+  fullscreen: true,
+  autoHideMenuBar: true
+};
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -59,7 +65,7 @@ app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
   }
-  
+
   mainWindow = new BrowserWindow({
     x: 0,
     y: 0,
@@ -70,7 +76,9 @@ app.on('ready', async () => {
     backgroundColor: '#000000',
     webPreferences: {
       zoomFactor: config.zoom
-    }
+    },
+    ...(process.env.NODE_ENV === 'production' ? productionWindow : {}),
+    ...config.electronOptions
   });
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
@@ -79,7 +87,7 @@ app.on('ready', async () => {
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
   mainWindow.webContents.on('did-finish-load', () => {
     if (!mainWindow) {
-      throw new Error('"mainWindow" is not defined');
+      throw new Error('\'mainWindow\' is not defined');
     }
     mainWindow.show();
     mainWindow.focus();
@@ -90,20 +98,20 @@ app.on('ready', async () => {
   });
 
   if (config.kiosk) {
-		mainWindow.on("blur", function() {
-			mainWindow.focus();
-		});
+    mainWindow.on('blur', () => {
+      mainWindow.focus();
+    });
 
-		mainWindow.on("leave-full-screen", function() {
-			mainWindow.setFullScreen(true);
-		});
+    mainWindow.on('leave-full-screen', () => {
+      mainWindow.setFullScreen(true);
+    });
 
-		mainWindow.on("resize", function() {
-			setTimeout(function() {
-				mainWindow.reload();
-			}, 1000);
-		});
-	}
+    mainWindow.on('resize', () => {
+      setTimeout(() => {
+        mainWindow.reload();
+      }, 1000);
+    });
+  }
 
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();

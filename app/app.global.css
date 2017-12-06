@@ -4,7 +4,7 @@
 @import url('./mirror/styles/custom.css');
 
 html {
-  cursor: default;
+  cursor: none;
   -webkit-user-select: none;
   box-sizing: border-box;
 }
