@@ -2,21 +2,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styles from './Snow.css';
-import { getConfig } from '../../../../mirror/core/utils';
 import Flake from './Flake';
 
 class Snow extends Component {
 
   constructor(props: any) {
     super(props);
-    this.mod = getConfig(Snow.moduleName);
     this.generateDom = this.generateDom.bind(this);
   }
-
-  state = {
-    position: 'full_screen_above',
-    flakeCount: 100,
-  };
 
   generateDom() {
     return Array.from(new Array(this.state.flakeCount), (item, index) => {
@@ -44,5 +37,15 @@ class Snow extends Component {
 }
 
 Snow.moduleName = 'Snow';
+
+Snow.defaultProps = {
+  position: 'full_screen_above',
+  flakeCount: 100,
+};
+
+Snow.propTypes = {
+  position: PropTypes.string,
+  flakeCount: PropTypes.number
+}
 
 export default Snow;

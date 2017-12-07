@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import getComponents from '../mirror/core/components';
 import config from '../mirror/config/config';
+import { getConfig } from '../mirror/core/utils';
 
 export default class Home extends Component {
   constructor(props) {
@@ -30,7 +31,7 @@ export default class Home extends Component {
         if (item.name in comps) {
           comps[item.position] = [...comps[item.position], <Component key={item.name} />];
         } else {
-          comps[item.position] = <Component key={item.name} />;
+          comps[item.position] = <Component key={item.name} {...getConfig(item.name)}/>;
         }
       }
     });

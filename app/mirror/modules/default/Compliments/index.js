@@ -5,15 +5,13 @@ import moment from 'moment';
 import classNames from 'classnames';
 import styles from './Compliments.css';
 import { defaultCompliments, getRandom, complimentFile } from './core/utils';
-import { getConfig } from '../../../../mirror/core/utils';
 
 class Compliments extends Component {
 
   constructor(props: any) {
     super(props);
-    this.mod = getConfig(Compliments.moduleName);
-    if (this.mod.config && this.mod.config.remoteFile) {
-      complimentFile(this.mod.config.remoteFile, (response) => {
+    if (this.props.config && this.props.config.remoteFile) {
+      complimentFile(this.props.config.remoteFile, (response) => {
         this.setState({
           compliments: JSON.parse(response)
         });
@@ -49,7 +47,7 @@ class Compliments extends Component {
     }, this.state.updateInterval);
     this.setState({
       intervalId: id,
-      ...this.mod.config,
+      ...this.props.config,
     });
   }
 
