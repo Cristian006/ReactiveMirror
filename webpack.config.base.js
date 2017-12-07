@@ -40,6 +40,9 @@ export default {
       path.join(__dirname, 'app'),
       'node_modules',
     ],
+    alias: {
+      common: path.resolve(__dirname, './app/mirror/modules')
+    }
   },
 
   plugins: [
@@ -47,7 +50,6 @@ export default {
       'process.env.MIRROR_CONFIG': JSON.stringify(process.env.MIRROR_CONFIG || { ...defaults, ...config }),
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
     }),
-
     new webpack.NamedModulesPlugin(),
   ],
 };

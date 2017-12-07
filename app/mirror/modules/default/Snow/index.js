@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styles from './Snow.css';
-import { getConfig } from '../../mirror/core/utils';
+import { getConfig } from '../../../../mirror/core/utils';
 import Flake from './Flake';
 
 class Snow extends Component {
@@ -43,6 +43,6 @@ class Snow extends Component {
   }
 }
 
-Snow.moduleName = 'snow';
+Snow.moduleName = 'Snow';
 
 export default Snow;

@@ -11,12 +11,28 @@ export function getConfig(moduleName: string) {
 }
 
 export function getWrapperStyle(position: string) {
-  let classes = position.replace('_', ' ');
-  var parentWrapper = document.getElementsByClassName(classes);
+  const classes = position.replace('_', ' ');
+  const parentWrapper = document.getElementsByClassName(classes);
   if (parentWrapper.length > 0) {
-    var wrapper = parentWrapper[0].getElementsByClassName('container');
+    const wrapper = parentWrapper[0].getElementsByClassName('container');
     if (wrapper.length > 0) {
       return wrapper[0];
     }
   }
 }
+
+export const positions = [
+  'top_ bar',
+  'top_left',
+  'top_center',
+  'top_right',
+  'upper_third',
+  'middle_center',
+  'lower_third',
+  'bottom_left',
+  'bottom_center',
+  'bottom_right',
+  'bottom_bar',
+  'fullscreen_above',
+  'fullscreen_below'
+];

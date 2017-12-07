@@ -2,9 +2,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import classNames from 'classnames';
 import styles from './Compliments.css';
 import { defaultCompliments, getRandom, complimentFile } from './core/utils';
-import { getConfig } from '../../mirror/core/utils';
+import { getConfig } from '../../../../mirror/core/utils';
 
 class Compliments extends Component {
 
@@ -126,13 +127,22 @@ class Compliments extends Component {
   render() {
     //console.log(this.state.opacity);
     return (
-      <div className={styles.container} style={{ transition: `opacity ${(this.state.fadeSpeed / 2)}ms ${this.state.animation}`, opacity: this.state.opacity }}>
+      <div
+        className={classNames ({
+          [styles.container]: true,
+          'thin xlarge bright': true,
+        })}
+        style={{
+          transition: `opacity ${(this.state.fadeSpeed / 2)}ms ${this.state.animation}`,
+          opacity: this.state.opacity
+        }}
+      >
         {this.state.currentCompliments[this.state.complimentIndex]}
       </div>
     );
   }
 }
 
-Compliments.moduleName = 'compliments';
+Compliments.moduleName = 'Compliments';
 
 export default Compliments;

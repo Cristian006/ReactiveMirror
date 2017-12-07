@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classNames from 'classnames';
 import styles from './Snow.css';
 
 export default class Flake extends Component {
@@ -13,9 +14,13 @@ export default class Flake extends Component {
         }}
       >
         <div
-          className={styles.flake}
+          className={classNames({
+            [styles.flake]: true,
+            [styles.flake1]: this.props.flakeIndex === 1,
+            [styles.flake2]: this.props.flakeIndex === 2,
+            [styles.flake3]: this.props.flakeIndex === 3
+          })}
           style={{
-            backgroundImage: `url('./components/Snow/images/flake${this.props.flakeIndex}.png')`,
             transform: `scale(${this.props.flakeSize}, ${this.props.flakeSize})`,
             opacity: this.props.flakeSize,
             animationDuration: this.props.flakeAnimationDuration,
