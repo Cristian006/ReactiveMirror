@@ -25,13 +25,9 @@ class Compliments extends Component {
   }
 
   state = {
-    position: 'lower_third',
-    animation: 'ease-in',
     opacity: 0,
     intervalId: null,
     showHideTimer: null,
-    fadeSpeed: 4000,
-    updateInterval: 30000,
     complimentIndex: 0,
     currentWeatherType: '',
     lastComplimentIndex: -1,
@@ -44,10 +40,9 @@ class Compliments extends Component {
     this.updateCompliments();
     let id = setInterval(() => {
       this.updateCompliments();
-    }, this.state.updateInterval);
+    }, this.props.updateInterval);
     this.setState({
-      intervalId: id,
-      ...this.props.config,
+      intervalId: id
     });
   }
 
@@ -63,7 +58,7 @@ class Compliments extends Component {
     });
     if (hide && callback) {
       this.setState({
-        showHideTimer: setTimeout(() => { callback(); }, this.state.fadeSpeed / 2),
+        showHideTimer: setTimeout(() => { callback(); }, this.props.fadeSpeed / 2),
       });
     } else {
       clearTimeout(this.state.showHideTimer);
@@ -131,7 +126,7 @@ class Compliments extends Component {
           'thin xlarge bright': true,
         })}
         style={{
-          transition: `opacity ${(this.state.fadeSpeed / 2)}ms ${this.state.animation}`,
+          transition: `opacity ${(this.props.fadeSpeed / 2)}ms ${this.props.animation}`,
           opacity: this.state.opacity
         }}
       >
@@ -142,5 +137,19 @@ class Compliments extends Component {
 }
 
 Compliments.moduleName = 'Compliments';
+
+Compliments.defaultProps = {
+  fadeSpeed: 4000,
+  updateInterval: 30000,
+  animation: 'ease-in',
+  position: 'lower_third',
+};
+
+Compliments.propTypes = {
+  fadeSpeed: PropTypes.number,
+  updateInterval: PropTypes.number,
+  animation: PropTypes.string,
+  position: PropTypes.string
+};
 
 export default Compliments;

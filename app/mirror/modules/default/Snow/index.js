@@ -12,7 +12,7 @@ class Snow extends Component {
   }
 
   generateDom() {
-    return Array.from(new Array(this.state.flakeCount), (item, index) => {
+    return Array.from(new Array(this.props.flakeCount), (item, index) => {
       return (
         <Flake
           key={`flake${index}`}
@@ -46,6 +46,6 @@ Snow.defaultProps = {
 Snow.propTypes = {
   position: PropTypes.string,
   flakeCount: PropTypes.number
-}
+};
 
 export default Snow;
