@@ -38,11 +38,10 @@ class Compliments extends Component {
 
   componentDidMount() {
     this.updateCompliments();
-    let id = setInterval(() => {
-      this.updateCompliments();
-    }, this.props.updateInterval);
     this.setState({
-      intervalId: id
+      intervalId: setInterval(() => {
+        this.updateCompliments();
+      }, this.props.updateInterval),
     });
   }
 
