@@ -121,10 +121,7 @@ class Compliments extends Component {
     //console.log(this.state.opacity);
     return (
       <div
-        className={classNames ({
-          [styles.container]: true,
-          'thin xlarge bright': true,
-        })}
+        className="thin xlarge bright"
         style={{
           transition: `opacity ${(this.props.fadeSpeed / 2)}ms ${this.props.animation}`,
           opacity: this.state.opacity

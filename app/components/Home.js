@@ -1,10 +1,10 @@
 // @flow
-import React, { Component } from 'react';
+import React from 'react';
 import getComponents from '../mirror/core/components';
 import config from '../mirror/config/config';
 import { getConfig } from '../mirror/core/utils';
 
-export default class Home extends Component {
+export default class Home extends React.Component {
   constructor(props) {
     super(props);
     this.loadInComponents = this.loadInComponents.bind(this);
@@ -69,7 +69,7 @@ export default class Home extends Component {
             </div>
             <div className="region upper third"><div className="container">{this.state.components.upper_third}</div></div>
             <div className="region middle center"><div className="container">{this.state.components.middle_center}</div></div>
-            <div className="region lower third"><div className="container">{this.state.components.lower_third}<br/></div></div>
+            <div className="region lower third"><div className="container"><br/>{this.state.components.lower_third}</div></div>
             <div className="region bottom bar">
               <div className="container">{this.state.components.bottom_bar}</div>
               <div className="region bottom left"><div className="container">{this.state.components.bottom_left}</div></div>

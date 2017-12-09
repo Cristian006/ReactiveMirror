@@ -41,17 +41,13 @@ class Clock extends Component {
     }
 
     let hourSymbol = this.props.timeFormat === 24 ? 'HH' : 'h';
-    let timeString = this.props.clockBold ? now.format(hourSymbol + "[<span className=\"bold\">]mm[</span>]") : now.format(`${hourSymbol}:mm`);
-    let dateString = now.format(this.props.dateFormat);
-    let weekString = `${'WEEK'} ${now.week()}`;
-    let secondsString = now.format('ss');
-    let periodString = this.props.showPeriodUpper ? now.format('A') : now.format('a');
     this.setState({
-      time: timeString,
-      date: dateString,
-      week: weekString,
-      seconds: secondsString,
-      period: periodString,
+      hour: now.format(hourSymbol),
+      minute: now.format('mm'),
+      date: now.format(this.props.dateFormat),
+      week: `${'WEEK'} ${now.week()}`,
+      seconds: now.format('ss'),
+      period: this.props.showPeriodUpper ? now.format('A') : now.format('a'),
     });
   }
 
@@ -59,20 +55,28 @@ class Clock extends Component {
     return (
       <div className={styles.Clock}>
         <div className={classNames({
-          [styles.date]: true,
+          date: true,
           'normal medium': true,
         })}>{this.state.date}</div>
         <div className={classNames({
-          [styles.time]: true,
+          time: true,
+          'bright large light': true,
         })}>
-          {`${this.state.time}`}
+          {this.state.hour}
+          <span className={this.props.clockBold ? 'bold' : ''}>{this.props.clockBold ? '' : ':'}{this.state.minute}</span>
           <sup className={'dimmed'}>{this.state.seconds}</sup>
-          <span>{this.state.period}</span>
+          {
+            (this.props.showPeriod && this.props.timeFormat !== 24) &&
+            <span>{this.state.period}</span>
+          }
         </div>
-        <div className={classNames({
-          [styles.week]: true,
-          'dimmed medium': true,
-        })}>{this.state.week}</div>
+        {
+          this.props.showWeek &&
+          <div className={classNames({
+            week: true,
+            'dimmed medium': true,
+          })}>{this.state.week}</div>
+        }
       </div>
     );
   }
@@ -81,11 +85,13 @@ class Clock extends Component {
 Clock.moduleName = 'Clock';
 
 Clock.defaultProps = {
+  position: 'top_right',
   displayType: 'digital',
   timeFormat: 12,
+  timezone: null,
   displaySeconds: true,
   showPeriod: true,
-  showPeriodUpper: false,
+  showPeriodUpper: true,
   clockBold: false,
   showDate: true,
   showWeek: false,
@@ -93,7 +99,17 @@ Clock.defaultProps = {
 };
 
 Clock.propTypes = {
-  position: PropTypes.string
+  position: PropTypes.string,
+  displayType: PropTypes.string,
+  dateFormat: PropTypes.string,
+  timeFormat: PropTypes.number,
+  displaySeconds: PropTypes.bool,
+  showPeriod: PropTypes.bool,
+  showPeriodUpper: PropTypes.bool,
+  clockBold: PropTypes.bool,
+  showDate: PropTypes.bool,
+  showWeek: PropTypes.bool,
+  timezone: PropTypes.string,
 };
 
 export default Clock;

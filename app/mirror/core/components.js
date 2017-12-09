@@ -1,8 +1,6 @@
-import React, { Component } from 'react';
 import config from '../config/config';
 
 const { modules } = config;
-const pathToComponents = `${__dirname}\\app\\mirror\\modules`;
 const loaderHelp = require.context('common', true, /index.js$/);
 
 function requireAll(requireContext) {
@@ -22,6 +20,5 @@ export default function getModules() {
       }
     }
   }
-  console.log(components);
   return components;
 }
