@@ -16,9 +16,9 @@
   animation-iteration-count: infinite;
 }
 
-.Snow .flake1 {background-image: url('./images/flake1.png');}
-.Snow .flake2 {background-image: url('./images/flake2.png');}
-.Snow .flake3 {background-image: url('./images/flake3.png');}
+.Snow .snowFlake .flake1 {background-image: url('./images/flake1.png');}
+.Snow .snowFlake .flake2 {background-image: url('./images/flake2.png');}
+.Snow .snowFlake .flake3 {background-image: url('./images/flake3.png');}
 
 @keyframes snowDrop {
   from {transform: translateY(0vh)}

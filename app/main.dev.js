@@ -93,6 +93,8 @@ app.on('ready', async () => {
     mainWindow.focus();
   });
 
+  mainWindow.openDevTools();
+  
   mainWindow.on('closed', () => {
     mainWindow = null;
   });

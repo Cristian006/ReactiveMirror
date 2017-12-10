@@ -4,6 +4,7 @@
 
 import path from 'path';
 import webpack from 'webpack';
+//import { ReactLoadablePlugin } from 'react-loadable/webpack';
 import { dependencies as externals } from './app/package.json';
 import defaults from './app/mirror/config/defaults';
 import config from './app/mirror/config/config';
@@ -18,7 +19,8 @@ export default {
       use: {
         loader: 'babel-loader',
         options: {
-          cacheDirectory: true
+          cacheDirectory: true,
+          plugins: ['react-loadable/babel'],
         }
       }
     }]

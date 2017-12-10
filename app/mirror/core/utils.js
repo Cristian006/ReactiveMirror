@@ -1,3 +1,6 @@
+import React from 'react';
+import Loadable from 'react-loadable';
+import Loading from '../../components/Loading';
 import config from '../config/config';
 
 export function getConfig(moduleName: string) {
@@ -8,6 +11,25 @@ export function getConfig(moduleName: string) {
     }
   }
   return {};
+}
+
+export function loadInComponents() {
+  const comps = {};
+  config.modules.filter((mod) => {
+    return !mod.hide;
+  }).map((item) => {
+    let MOD = Loadable({
+      loader: () => import(`common/${item.path}`),
+      loading: Loading
+    });
+
+    if (item.position in comps) {
+      comps[item.position] = [...comps[item.position], <MOD key={item.name} {...getConfig(item.name)} />];
+    } else {
+      comps[item.position] = [<MOD key={item.name} {...getConfig(item.name)} />];
+    }
+  });
+  return comps;
 }
 
 export function getWrapperStyle(position: string) {

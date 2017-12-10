@@ -1,10 +1,11 @@
 // @flow
-import React from 'react';
-import getComponents from '../mirror/core/components';
+import React, { Component } from 'react';
+import Loadable from 'react-loadable';
 import config from '../mirror/config/config';
-import { getConfig } from '../mirror/core/utils';
+import { getConfig/*, loadInComponents*/ } from '../mirror/core/utils';
+import Loading from './Loading';
 
-export default class Home extends React.Component {
+export default class Home extends Component {
   constructor(props) {
     super(props);
     this.loadInComponents = this.loadInComponents.bind(this);
@@ -22,17 +23,19 @@ export default class Home extends React.Component {
 
   loadInComponents() {
     const comps = {};
-    const components = getComponents();
-    console.log(components);
-    config.modules.map((item) => {
-      if (item.name in components) {
-        console.log(item.name);
-        const Component = components[item.name];
-        if (item.name in comps) {
-          comps[item.position] = [...comps[item.position], <Component key={item.name} />];
-        } else {
-          comps[item.position] = <Component key={item.name} {...getConfig(item.name)}/>;
-        }
+    config.modules.filter((mod) => {
+      return !mod.hide;
+    }).map((item) => {
+      console.log(item);
+      let MOD = Loadable({
+        loader: () => import(`common/${item.path}`),
+        loading: Loading
+      });
+
+      if (item.position in comps) {
+        comps[item.position] = [...comps[item.position], <MOD key={item.name} {...getConfig(item.name)} />];
+      } else {
+        comps[item.position] = [<MOD key={item.name} {...getConfig(item.name)} />];
       }
     });
     return comps;

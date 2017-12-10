@@ -24,7 +24,7 @@ export default merge.smart(baseConfig, {
 
   output: {
     path: path.join(__dirname, 'app/dist'),
-    publicPath: '../dist/',
+    publicPath: './dist/',
     filename: 'renderer.prod.js'
   },
 
@@ -92,6 +92,9 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'application/font-woff',
+            publicPath: function(url) {
+              return url.replace(/dist/, '..')
+            },
           }
         },
       },
@@ -103,6 +106,9 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'application/font-woff',
+            publicPath: function(url) {
+              return url.replace(/dist/, '..')
+            },
           }
         }
       },
@@ -113,7 +119,10 @@ export default merge.smart(baseConfig, {
           loader: 'url-loader',
           options: {
             limit: 10000,
-            mimetype: 'application/octet-stream'
+            mimetype: 'application/octet-stream',
+            publicPath: function(url) {
+              return url.replace(/dist/, '..')
+            },
           }
         }
       },
@@ -130,13 +139,23 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'image/svg+xml',
+            publicPath: function(url) {
+              return url.replace(/dist/, '..')
+            },
           }
         }
       },
       // Common Image Formats
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
-        use: 'url-loader',
+        use: {
+          loader: 'url-loader',
+          options: {
+            publicPath: function(url) {
+              return url.replace(/dist/, '..')
+            },
+          }
+        }
       }
     ]
   },
