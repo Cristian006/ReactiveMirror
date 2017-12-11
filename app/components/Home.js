@@ -1,41 +1,13 @@
 // @flow
 import React from 'react';
-import getComponents from '../mirror/core/components';
-import config from '../mirror/config/config';
-import { getConfig } from '../mirror/core/utils';
+import getModules from '../mirror/core/components';
 
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.loadInComponents = this.loadInComponents.bind(this);
-  }
-
-  state = {
-    components: null,
-  };
-
-  componentDidMount() {
-    this.setState({
-      components: this.loadInComponents()
-    });
-  }
-
-  loadInComponents() {
-    const comps = {};
-    const components = getComponents();
-    console.log(components);
-    config.modules.map((item) => {
-      if (item.name in components) {
-        console.log(item.name);
-        const Component = components[item.name];
-        if (item.name in comps) {
-          comps[item.position] = [...comps[item.position], <Component key={item.name} />];
-        } else {
-          comps[item.position] = <Component key={item.name} {...getConfig(item.name)}/>;
-        }
-      }
-    });
-    return comps;
+    this.state = {
+      components: getModules(),
+    };
   }
 
   render() {
@@ -82,7 +54,7 @@ export default class Home extends React.Component {
       );
     }
     return (
-      <div></div>
+      <div>Reactive Mirror</div>
     );
   }
 }

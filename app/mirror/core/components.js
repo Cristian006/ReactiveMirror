@@ -1,4 +1,5 @@
 import config from '../config/config';
+import React from 'react';
 
 const { modules } = config;
 const loaderHelp = require.context('common', true, /index.js$/);
@@ -8,17 +9,25 @@ function requireAll(requireContext) {
 }
 
 export default function getModules() {
-  const components = {};
-  const allModules = requireAll(loaderHelp);
-  // For each component in the config fiel into an object
-  for (let i = modules.length - 1; i >= 0; i -= 1) {
-    if (modules[i].hide) continue;
-    for (let j = 0; j < allModules.length; j += 1) {
-      if (modules[i].name === allModules[j].moduleName) {
-        components[modules[i].name] = allModules[j];
+  const comps = {};
+  const allMods = requireAll(loaderHelp);
+  modules.filter((mod) => {
+    return !mod.hide;
+  }).map((item) => {
+    for (let j = 0; j < allMods.length; j += 1) {
+      if (item.name === allMods[j].moduleName) {
+        const MOD = allMods[j];
+        if (item.position in comps) {
+          comps[item.position] = [
+            ...comps[item.position],
+            <MOD key={item.name} {...item} />
+          ];
+        } else {
+          comps[item.position] = [<MOD key={item.name} {...item} />];
+        }
         break;
       }
     }
-  }
-  return components;
+  });
+  return comps;
 }
