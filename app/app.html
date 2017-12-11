@@ -29,11 +29,13 @@
 
         // Dynamically insert the bundled app script in the renderer process
         const port = process.env.PORT || 1212;
-        scripts.push(
-          (process.env.HOT)
-            ? 'http://localhost:' + port + '/dist/renderer.dev.js'
-            : './dist/renderer.prod.js'
-        );
+
+        if (process.env.HOT) {
+          scripts.push('http://localhost:' + port + '/dist/renderer.dev.js');
+        } else {
+          scripts.push('./dist/renderer.prod.js');
+          scripts.push('./dist/0.renderer.prod.js');
+        }
 
         document.write(
           scripts

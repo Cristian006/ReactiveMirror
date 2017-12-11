@@ -92,9 +92,7 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'application/font-woff',
-            publicPath: function(url) {
-              return url.replace(/dist/, '..')
-            },
+            publicPath: (url) => url.replace(/dist/, '..'),
           }
         },
       },
@@ -106,9 +104,7 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'application/font-woff',
-            publicPath: function(url) {
-              return url.replace(/dist/, '..')
-            },
+            publicPath: (url) => url.replace(/dist/, '..'),
           }
         }
       },
@@ -120,16 +116,19 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'application/octet-stream',
-            publicPath: function(url) {
-              return url.replace(/dist/, '..')
-            },
+            publicPath: (url) => url.replace(/dist/, '..'),
           }
         }
       },
       // EOT Font
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-        use: 'file-loader',
+        use: {
+          loader: 'file-loader',
+          options: {
+            publicPath: (url) => url.replace(/dist/, '..'),
+          }
+        }
       },
       // SVG Font
       {
@@ -139,9 +138,7 @@ export default merge.smart(baseConfig, {
           options: {
             limit: 10000,
             mimetype: 'image/svg+xml',
-            publicPath: function(url) {
-              return url.replace(/dist/, '..')
-            },
+            publicPath: (url) => url.replace(/dist/, '..'),
           }
         }
       },
@@ -151,9 +148,7 @@ export default merge.smart(baseConfig, {
         use: {
           loader: 'url-loader',
           options: {
-            publicPath: function(url) {
-              return url.replace(/dist/, '..')
-            },
+            publicPath: (url) => url.replace(/dist/, '..'),
           }
         }
       }

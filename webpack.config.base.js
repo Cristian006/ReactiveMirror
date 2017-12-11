@@ -20,7 +20,6 @@ export default {
         loader: 'babel-loader',
         options: {
           cacheDirectory: true,
-          plugins: ['react-loadable/babel'],
         }
       }
     }]
