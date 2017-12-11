@@ -50,6 +50,4 @@ main.js.map
 
 .idea
 npm-debug.log.*
-
-# Mirror
-app/mirror/config/config.js
+__snapshots__

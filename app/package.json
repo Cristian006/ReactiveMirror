@@ -1,0 +1,22 @@
+{
+  "name": "reactive-mirror",
+  "productName": "Reactive Mirror",
+  "version": "0.1.0",
+  "description": "Electron React Mirror App for Raspberry Pi",
+  "main": "./main.prod.js",
+  "author": {
+    "name": "Cristian Ponce",
+    "email": "cristianrponce06@gmail.com",
+    "url": "https://github.com/cristian006"
+  },
+  "scripts": {
+    "postinstall": "npm rebuild --runtime=electron --target=1.6.6 --disturl=https://atom.io/download/atom-shell --build-from-source"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "moment": "^2.19.3",
+    "moment-timezone": "^0.5.14",
+    "roboto-fontface": "^0.8.0"
+  }
+}
