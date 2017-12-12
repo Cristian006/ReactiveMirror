@@ -1,0 +1,25 @@
+.mirror {
+  margin: 60px;
+  position: absolute;
+  height: calc(100% - 120px);
+  width: calc(100% - 120px);
+  color: #aaa;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 400;
+  font-size: 2em;
+  line-height: 1.5em;
+  -webkit-font-smoothing: antialiased;
+}
+
+.config {
+  position: absolute;
+  top: 25;
+  margin: 0 auto;
+  padding: 24px;
+  border-radius: 5px;
+  border-width: 2px;
+  border-color: #fff;
+  background-color: #eeee;
+  height: 64px;
+  width: 64px;
+}
