@@ -11,14 +11,24 @@ export default class App extends Component {
     super(props);
     this.mouseMove = this.mouseMove.bind(this);
     this.state = {
-      mouseTimer: null,
+      mouseTimer: setTimeout(()=> {
+        this.setState({
+          cursorVisible: false,
+          forceHide: true,
+        });
+        setTimeout(() => {
+          this.setState({
+            forceHide: false,
+          });
+        }, 200);
+      }, 4000),
       cursorVisible: false,
       forceHide: false
     };
   }
 
   mouseMove() {
-    if(!this.state.forceHide){
+    if (!this.state.forceHide && this.state.mouseTimer){
       this.setState({
         cursorVisible: true,
       });
@@ -36,7 +46,7 @@ export default class App extends Component {
               forceHide: false,
             });
           }, 200);
-        }, 1000)
+        }, 4000)
       });
     }
   }
@@ -44,8 +54,7 @@ export default class App extends Component {
   render() {
     const configStyle = {
       color: '#fff',
-      margin: '0 auto',
-      padding: '24px',
+      padding: '16px',
       borderRadius: '5px',
       borderWidth: '2px',
       borderColor: '#fff',
@@ -55,7 +64,6 @@ export default class App extends Component {
       zIndex: '1000',
       position: 'fixed',
       top: 0,
-      left: 0,
       right: 0,
       justifyContent: 'center',
       display: this.state.cursorVisible ? 'flex' : 'none'
@@ -64,7 +72,9 @@ export default class App extends Component {
     return (
       <div style={{ position: 'relative', width: '100vw', height: '100vh', cursor: this.state.cursorVisible ? 'default' : 'none' }} onMouseMove={this.mouseMove}>
         {this.props.children}
-        <div style={configStyle}><i className="fa fa-cog"/></div>
+        <div style={configStyle}>
+          <i className="fa fa-cog" />
+        </div>
       </div>
     );
   }
