@@ -4,11 +4,12 @@ import getModules from '../mirror/core/components';
 import styles from './Mirror.css';
 
 export default class Mirror extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {
       components: getModules(),
-    }
+    };
   }
 
   render() {

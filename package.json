@@ -199,6 +199,7 @@
     "react-router-redux": "^5.0.0-alpha.6",
     "redux": "^3.7.1",
     "redux-thunk": "^2.2.0",
+    "request": "^2.83.0",
     "source-map-support": "^0.4.15"
   },
   "devEngines": {

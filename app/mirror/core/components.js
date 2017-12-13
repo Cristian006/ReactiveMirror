@@ -20,10 +20,10 @@ export default function getModules() {
         if (item.position in comps) {
           comps[item.position] = [
             ...comps[item.position],
-            <MOD key={item.name} {...item} />
+            <MOD key={item.name} {...item.config} />
           ];
         } else {
-          comps[item.position] = [<MOD key={item.name} {...item} />];
+          comps[item.position] = [<MOD key={item.name} {...item.config} />];
         }
         break;
       }

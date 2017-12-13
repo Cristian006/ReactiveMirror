@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-export default class WeatherInfo extends Component {
+export default class WeatherDetail extends Component {
   render() {
     let winDir = null;
     if (this.props.showWindDirection) {

@@ -18,7 +18,7 @@ class Compliments extends Component {
       });
     }
 
-    this.updateCompliments = this.updateCompliments.bind(this);
+    this.updateModule = this.updateModule.bind(this);
     this.hideShowModule = this.hideShowModule.bind(this);
     this.randomIndex = this.randomIndex.bind(this);
     this.complimentArray = this.complimentArray.bind(this);
@@ -37,10 +37,10 @@ class Compliments extends Component {
   };
 
   componentDidMount() {
-    this.updateCompliments();
+    this.updateModule();
     this.setState({
       intervalId: setInterval(() => {
-        this.updateCompliments();
+        this.updateModule();
       }, this.props.updateInterval),
     });
   }
@@ -105,7 +105,7 @@ class Compliments extends Component {
     return compliments;
   }
 
-  updateCompliments() {
+  updateModule() {
     this.hideShowModule(true, () => {
       this.setState({
         complimentIndex: this.randomIndex(),
