@@ -17,6 +17,7 @@
     "classnames": "^2.2.5",
     "moment": "^2.19.3",
     "moment-timezone": "^0.5.14",
-    "roboto-fontface": "^0.8.0"
+    "roboto-fontface": "^0.8.0",
+    "weathericons": "^2.1.0"
   }
 }

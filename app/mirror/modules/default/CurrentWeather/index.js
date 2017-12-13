@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment-timezone';
 import request from 'request';
+import styles from './CurrentWeather.css';
 import WeatherDetail from './WeatherDetail';
 import { roundValue, ms2Beaufort, deg2Cardinal, iconTable } from './core/utils';
 import notifications from '../../../core/notifications';
@@ -28,6 +29,7 @@ class CurrentWeather extends Component {
     sunriseSunsetTime: null,
     sunriseSunsetIcon: null,
     temperature: null,
+    humidity: null,
     indoorTemperature: null,
     indoorHumidity: null,
     weatherType: null,
@@ -122,7 +124,7 @@ class CurrentWeather extends Component {
       : parseFloat(data.wind.speed).toFixed(0);
 
     weatherObj.windDirection = deg2Cardinal(data.wind.deg);
-    weatherObj.windDeg = data.wind.deg;
+    weatherObj.windDegrees = data.wind.deg;
     weatherObj.weatherType = iconTable[data.weather[0].icon];
 
     const now = new Date();
@@ -197,6 +199,7 @@ class CurrentWeather extends Component {
       if (!error && response.statusCode === 200) {
         console.log(body);
         callback(JSON.parse(body));
+        return;
       } else if (response.statusCode === 401) {
         retry = true;
       } else {
@@ -255,21 +258,43 @@ class CurrentWeather extends Component {
 
     return (
       <div
-      style={{
-        transition: `opacity ${(this.props.fadeSpeed / 2)}ms ${this.props.animation}`,
-        opacity: this.state.opacity
-      }}>
+        className={styles.currentweather}
+        style={{
+          transition: `opacity ${(this.props.fadeSpeed / 2)}ms ${this.props.animation}`,
+          opacity: this.state.opacity
+        }}
+      >
         {
           (!this.props.onlyTemp) &&
-          <WeatherDetail />
+          <WeatherDetail
+            showWindDirection={this.props.showWindDirection}
+            showWindDirectionAsArrow={this.props.showWindDirectionAsArrow}
+            windDegrees={this.state.windDegrees}
+            windSpeed={this.state.windSpeed}
+            humidity={this.state.humidity}
+            sunriseSunsetTime={this.state.sunriseSunsetTime}
+            sunriseSunsetIcon={this.state.sunriseSunsetIcon}
+          />
         }
         <div className="large light">
-          <span className={`wi weathericon ${this.props.weatherType}`} />
+          <span
+            className={
+              classNames({
+                wi: true,
+                [this.state.weatherType]: true,
+                [styles.weathericon]: true
+              })
+            }
+          />
           <span className="bright">{this.state.temperature}{this.props.showDegreeLabel ? <span>&deg;{degreeLabel}</span> : ''}</span>
           {
             (this.props.showIndoorTemperature && this.state.indoorTemperature) &&
             <span>
-              <span className="fa fa-home" />
+              <span className={classNames({
+                'fa fa-home': true,
+                [styles.weathericon]: true
+              })}
+              />
               <span className="bright">{this.state.indoorTemperature}&deg;{degreeLabel}</span>
             </span>
           }
@@ -295,11 +320,11 @@ CurrentWeather.defaultProps = {
   units: "imperial",
   updateInterval: 600000, // every 10 minutes
   animationSpeed: 1000,
-  timeFormat: 24,
+  timeFormat: 12,
   showPeriod: true,
   showPeriodUpper: false,
   showWindDirection: true,
-  showWindDirectionAsArrow: false,
+  showWindDirectionAsArrow: true,
   useBeaufort: true,
   lang: "en",
   showHumidity: false,
