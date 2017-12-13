@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import classNames from 'classnames';
 import styles from './Compliments.css';
-import { defaultCompliments, getRandom, complimentFile } from './core/utils';
+import notifications from '../../../core/notifications';
+import { defaultCompliments, getRandom, complimentFile, weatherIconTable } from './core/utils';
 
 class Compliments extends Component {
 
@@ -42,6 +43,16 @@ class Compliments extends Component {
       intervalId: setInterval(() => {
         this.updateModule();
       }, this.props.updateInterval),
+    });
+
+    notifications.on('NOTIFICATION', (arg) => {
+      switch (arg.type) {
+        case 'CURRENTWEATHER_DATA':
+          this.setState({
+            currentWeatherType: weatherIconTable[arg.payload.weather[0].icon]
+          });
+          break;
+      }
     });
   }
 

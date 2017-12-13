@@ -35,26 +35,23 @@ export function complimentFile(remoteFile, callback) {
   xobj.send(null);
 }
 
-export function getCurrentWeatherType(data) {
-  const weatherIconTable = {
-    '01d': 'day_sunny',
-    '02d': 'day_cloudy',
-    '03d': 'cloudy',
-    '04d': 'cloudy_windy',
-    '09d': 'showers',
-    '10d': 'rain',
-    '11d': 'thunderstorm',
-    '13d': 'snow',
-    '50d': 'fog',
-    '01n': 'night_clear',
-    '02n': 'night_cloudy',
-    '03n': 'night_cloudy',
-    '04n': 'night_cloudy',
-    '09n': 'night_showers',
-    '10n': 'night_rain',
-    '11n': 'night_thunderstorm',
-    '13n': 'night_snow',
-    '50n': 'night_alt_cloudy_windy'
-  };
-  return weatherIconTable[data];
-}
+export const weatherIconTable = {
+  '01d': 'day_sunny',
+  '02d': 'day_cloudy',
+  '03d': 'cloudy',
+  '04d': 'cloudy_windy',
+  '09d': 'showers',
+  '10d': 'rain',
+  '11d': 'thunderstorm',
+  '13d': 'snow',
+  '50d': 'fog',
+  '01n': 'night_clear',
+  '02n': 'night_cloudy',
+  '03n': 'night_cloudy',
+  '04n': 'night_cloudy',
+  '09n': 'night_showers',
+  '10n': 'night_rain',
+  '11n': 'night_thunderstorm',
+  '13n': 'night_snow',
+  '50n': 'night_alt_cloudy_windy'
+};
