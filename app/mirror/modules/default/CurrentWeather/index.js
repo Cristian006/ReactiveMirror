@@ -285,6 +285,9 @@ class CurrentWeather extends Component {
                 [styles.weathericon]: true
               })
             }
+            style={{
+              paddingRight: '8px',
+            }}
           />
           <span className="bright">{this.state.temperature}{this.props.showDegreeLabel ? <span>&deg;{degreeLabel}</span> : ''}</span>
           {
