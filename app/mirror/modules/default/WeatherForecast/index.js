@@ -4,12 +4,11 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment-timezone';
 import request from 'request';
-import styles from './CurrentWeather.css';
-import WeatherDetail from './WeatherDetail';
+import styles from './WeatherForecast.css';
 import { roundValue, ms2Beaufort, deg2Cardinal, iconTable } from './core/utils';
 import notifications from '../../../core/notifications';
 
-class CurrentWeather extends Component {
+class WeatherForecast extends Component {
 
   constructor(props: any) {
     super(props);
@@ -185,7 +184,7 @@ class CurrentWeather extends Component {
   
   updateWeather(callback) {
     if (this.props.appid === '') {
-      console.log("[ERROR] CurrentWeather: APPID not set!");
+      console.log("[ERROR] WeatherForecast: APPID not set!");
       return;
     }
 
@@ -203,7 +202,7 @@ class CurrentWeather extends Component {
       } else if (response.statusCode === 401) {
         retry = true;
       } else {
-        callback({ error: `${CurrentWeather.moduleName}: Could not load weather.` });
+        callback({ error: `${WeatherForecast.moduleName}: Could not load weather.` });
       }
       if (retry) {
         setTimeout(() => {
@@ -218,6 +217,77 @@ class CurrentWeather extends Component {
 			return `${this.props.header} ${this.props.fetchedLocatioName}`;
 		}
 		return this.props.header;
+  }
+
+  generateTable() {
+    if(this.state.forecast.length > 0) {
+      return this.state.forecast.map((f, indx) => {
+        let degreeLabel = '';
+        if (this.props.scale) {
+          switch (this.props.units) {
+            case 'metric':
+              degreeLabel = 'C';
+              break;
+            case 'imperial':
+              degreeLabel = 'F';
+              break;
+            default:
+              degreeLabel = 'K';
+              break;
+          }
+        }
+
+        let rainCell;
+        let rainText = this.props.units !== 'imperial' ? `${f.rain} mm` : (parseFloat(f.rain) / 25.4).toFixed(2) + ' in';
+        if (this.props.showRainAmount) {
+          rainCell = (
+            <td className={classNames({
+              'align-right bright': true,
+              [styles.rain]: true
+            })}>
+              {rainText}
+            </td>
+          );
+        }
+        let op = 1;
+        if (this.props.fade && this.props.fadePoint < 1) {
+          let fPoint = this.props.fadePoint > 0 ? this.props.fadePoint : 0;
+          let startPoint = this.state.forecast.length * fPoint;
+          let steps = this.state.forecast.length - startPoint;
+          if (indx >= startPoint) {
+            let currentStep = indx - startPoint;
+            op = 1 - ((1 / steps) * currentStep);
+          }
+        }
+
+        return (
+          <tr className={classNames({
+            [styles.colored]: this.props.colored,
+          })} 
+          style={{opacity: op}}>
+            <td className={styles.day}>{f.day}</td>
+            <td className={classNames({
+              "bright": true,
+              [styles.weathericon]: true,
+            })}>
+              <span className={`wi weathericon ${f.icon}`} />
+            </td>
+            <td className={classNames({
+              "align-right bright": true,
+              [styles.maxTemp]: true,
+            })}>
+              {f.maxTemp}{degreeLabel}
+            </td>
+            <td className={classNames({
+              "align-right": true,
+              [styles.minTemp]: true,
+            })}>
+              {f.minTemp}{degreeLabel}
+            </td>
+          </tr>
+        );
+      });
+    }
   }
 
   render() {
@@ -237,82 +307,25 @@ class CurrentWeather extends Component {
       );
     }
 
-    let degreeLabel = '';
-    if (this.props.showDegreeLabel) {
-      switch (this.props.units) {
-        case 'metric':
-          degreeLabel = 'C';
-          break;
-        case 'imperial':
-          degreeLabel = 'F';
-          break;
-        default:
-          degreeLabel = 'K';
-          break;
-      }
-    }
-
     return (
       <div
-        className={styles.currentweather}
+        className={styles.WeatherForecast}
         style={{
           transition: `opacity ${(this.props.fadeSpeed / 2)}ms ${this.props.animation}`,
           opacity: this.state.opacity
         }}
       >
-        {
-          (!this.props.onlyTemp) &&
-          <WeatherDetail
-            showWindDirection={this.props.showWindDirection}
-            showWindDirectionAsArrow={this.props.showWindDirectionAsArrow}
-            windDegrees={this.state.windDegrees}
-            windSpeed={this.state.windSpeed}
-            humidity={this.state.humidity}
-            sunriseSunsetTime={this.state.sunriseSunsetTime}
-            sunriseSunsetIcon={this.state.sunriseSunsetIcon}
-          />
-        }
-        <div className="large light">
-          <span
-            className={
-              classNames({
-                wi: true,
-                [this.state.weatherType]: true,
-                [styles.weathericon]: true
-              })
-            }
-            style={{
-              paddingRight: '8px',
-            }}
-          />
-          <span className="bright">{this.state.temperature}{this.props.showDegreeLabel ? <span>&deg;{degreeLabel}</span> : ''}</span>
-          {
-            (this.props.showIndoorTemperature && this.state.indoorTemperature) &&
-            <span>
-              <span className={classNames({
-                'fa fa-home': true,
-                [styles.weathericon]: true
-              })}
-              />
-              <span className="bright">{this.state.indoorTemperature}&deg;{degreeLabel}</span>
-            </span>
-          }
-          {
-            (this.props.showIndoorHumidity && this.state.indoorHumidity) &&
-            <span>
-              <span className="fa fa-tint" />
-              <span className="bright">{this.state.indoorHumidity}%</span>
-            </span>
-          }
-        </div>
+        <table className="small">
+          {}
+        </table>
       </div>
     );
   }
 }
 
-CurrentWeather.moduleName = 'CurrentWeather';
+WeatherForecast.moduleName = 'WeatherForecast';
 
-CurrentWeather.defaultProps = {
+WeatherForecast.defaultProps = {
   location: false,
   locationID: false,
   appid: "",
@@ -334,18 +347,19 @@ CurrentWeather.defaultProps = {
   retryDelay: 2500,
   apiVersion: "2.5",
   apiBase: "http://api.openweathermap.org/data/",
-  weatherEndpoint: "weather",
+  forecastEndpoint: "forecast/daily",
   appendLocationNameToHeader: true,
   calendarClass: "calendar",
+  colored: true,
   onlyTemp: false,
   roundTemp: false
 };
 
-CurrentWeather.propTypes = {
+WeatherForecast.propTypes = {
   fadeSpeed: PropTypes.number,
   updateInterval: PropTypes.number,
   animation: PropTypes.string,
   position: PropTypes.string
 };
 
-export default CurrentWeather;
+export default WeatherForecast;
