@@ -16,8 +16,8 @@ class WeatherForecast extends Component {
     this.hideShowModule = this.hideShowModule.bind(this);
     this.processWeather = this.processWeather.bind(this);
     this.updateWeather = this.updateWeather.bind(this);
-    this.getHeader = this.getHeader.bind(this);
     this.getUrlParams = this.getUrlParams.bind(this);
+    this.generateTable = this.generateTable.bind(this);
   }
 
   state = {
@@ -29,8 +29,6 @@ class WeatherForecast extends Component {
     sunriseSunsetIcon: null,
     temperature: null,
     humidity: null,
-    indoorTemperature: null,
-    indoorHumidity: null,
     weatherType: null,
     loading: true
   };
@@ -188,7 +186,7 @@ class WeatherForecast extends Component {
       return;
     }
 
-    const URL = `${this.props.apiBase}${this.props.apiVersion}/${this.props.weatherEndpoint}${this.getUrlParams()}`;
+    const URL = `${this.props.apiBase}${this.props.apiVersion}/${this.props.forecastEndpoint}${this.getUrlParams()}`;
     let retry = true;
 
     request({
@@ -211,16 +209,9 @@ class WeatherForecast extends Component {
       }
     });
   }
-  
-  getHeader() {
-    if (this.props.appendLocationNameToHeader) {
-			return `${this.props.header} ${this.props.fetchedLocatioName}`;
-		}
-		return this.props.header;
-  }
 
   generateTable() {
-    if(this.state.forecast.length > 0) {
+    if (this.state.forecast.length > 0) {
       return this.state.forecast.map((f, indx) => {
         let degreeLabel = '';
         if (this.props.scale) {
@@ -261,19 +252,21 @@ class WeatherForecast extends Component {
         }
 
         return (
-          <tr className={classNames({
-            [styles.colored]: this.props.colored,
-          })} 
-          style={{opacity: op}}>
+          <tr
+            className={classNames({
+              [styles.colored]: this.props.colored,
+            })} 
+            style={{ opacity: op }}
+          >
             <td className={styles.day}>{f.day}</td>
             <td className={classNames({
-              "bright": true,
+              bright: true,
               [styles.weathericon]: true,
             })}>
               <span className={`wi weathericon ${f.icon}`} />
             </td>
             <td className={classNames({
-              "align-right bright": true,
+              'align-right bright': true,
               [styles.maxTemp]: true,
             })}>
               {f.maxTemp}{degreeLabel}
@@ -294,7 +287,8 @@ class WeatherForecast extends Component {
     if (!this.props.appid) {
       return (
         <div className="dimmed light small">
-          Please set the correct openweather <i>appid</i> in the config for module: {this.moduleName}.
+          Please set the correct openweather <i>appid</i> in the config for module: 
+          {this.moduleName}.
         </div>
       );
     }
@@ -316,7 +310,7 @@ class WeatherForecast extends Component {
         }}
       >
         <table className="small">
-          {}
+          {this.generateTable()}
         </table>
       </div>
     );
