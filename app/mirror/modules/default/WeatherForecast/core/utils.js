@@ -1,3 +1,60 @@
+import moment from 'moment';
+
+export function parseWeather(forecast) {
+  let t;
+  if (forecast.main) {
+    t = { min: forecast.main.temp_min, max: forecast.main.temp_max };
+  }
+  return { ...forecast, temp: t };
+}
+
+export function processWeather(data) {
+  if (!data) {
+    // Did not receive usable new data.
+    // Maybe this needs a better check?
+    console.log('didnt work');
+    return;
+  }
+
+  const getForecast = () => {
+    const forecastData = {};
+    let lastDay = null;
+    return data.list.map((f) => {
+      const forecast = { ...parseWeather(f) };
+      const fDay = moment(forecast.dt, 'X').format('ddd');
+      const hour = moment(forecast.dt, 'X').format('H');
+
+      if (fDay !== lastDay) {
+        const fData = {
+          day: fDay,
+          icon: iconTable[forecast.weather[0].icon],
+          maxTemp: roundValue(forecast.temp.max),
+          minTemp: roundValue(forecast.temp.min),
+          rain: roundValue(forecast.rain)
+        };
+
+        lastDay = fData;
+        return fData;
+      } else {
+        forecastData.maxTemp = forecast.temp.max > parseFloat(forecastData.maxTemp) ? roundValue(forecast.temp.max) : forecastData.maxTemp;
+        forecastData.minTemp = forecast.temp.min < parseFloat(forecastData.minTemp) ? roundValue(forecast.temp.min) : forecastData.minTemp;
+
+        if (hour >= 8 && hour <= 17) {
+          forecastData.icon = iconTable[forecast.weather[0].icon];
+        }
+      }
+    });
+  };
+
+  const weatherObj = {
+    fetchedLocationName: `${data.city.name}, ${data.city.country}`,
+    forecast: getForecast(),
+    loading: false,
+  };
+
+  return weatherObj;
+}
+
 export const iconTable = {
   '01d': 'wi-day-sunny',
   '02d': 'wi-day-cloudy',

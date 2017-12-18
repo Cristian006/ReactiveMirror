@@ -104,7 +104,6 @@ class NewsFeed extends Component {
       url: URL,
     }, (error, response, body) => {
       if (!error && response.statusCode === 200) {
-        console.log(body);
         callback(JSON.parse(body).articles);
       } else {
         callback({ error: `${NewsFeed.moduleName}: Could not load news items.` });

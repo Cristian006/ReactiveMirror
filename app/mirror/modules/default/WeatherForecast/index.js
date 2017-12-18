@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import moment from 'moment-timezone';
 import request from 'request';
 import styles from './WeatherForecast.css';
-import { roundValue, ms2Beaufort, deg2Cardinal, iconTable } from './core/utils';
+import { processWeather } from './core/utils';
 import notifications from '../../../core/notifications';
 
 class WeatherForecast extends Component {
@@ -14,22 +14,21 @@ class WeatherForecast extends Component {
     super(props);
     this.updateModule = this.updateModule.bind(this);
     this.hideShowModule = this.hideShowModule.bind(this);
-    this.processWeather = this.processWeather.bind(this);
     this.updateWeather = this.updateWeather.bind(this);
     this.getUrlParams = this.getUrlParams.bind(this);
     this.generateTable = this.generateTable.bind(this);
   }
 
   state = {
+    forecastEndpoint: 'forecast',
+    maxNumberOfDays: 7,
+    fetchedLocationName: '',
     intervalId: null,
     windSpeed: null,
     windDirection: null,
     windDegrees: null,
-    sunriseSunsetTime: null,
-    sunriseSunsetIcon: null,
-    temperature: null,
-    humidity: null,
     weatherType: null,
+    forecast: [],
     loading: true
   };
 
@@ -39,10 +38,11 @@ class WeatherForecast extends Component {
     }
 
     this.updateModule();
+    console.log(this.props.updateInterval);
     this.setState({
       intervalId: setInterval(() => {
         this.updateModule();
-      }, this.props.updateInterval),
+      }, this.props.updateInterval)
     });
 
     notifications.on('NOTIFICATION', (arg) => {
@@ -56,16 +56,6 @@ class WeatherForecast extends Component {
             }
           }
           break;
-        case 'INDOOR_TEMPURATURE':
-          this.setState({
-            indoorTemperature: roundValue(arg.payload)
-          });
-          break;
-        case 'INDOOR_HUMIDITY':
-          this.setState({
-            indoorHumidity: roundValue(arg.payload)
-          });
-          break;
       }
     });
   }
@@ -76,15 +66,16 @@ class WeatherForecast extends Component {
   }
 
   updateModule() {
+    console.log('update module');
     this.hideShowModule(true, () => {
       this.updateWeather((data) => {
-        if(data.error) {
+        if (data.error) {
           console.log(data.error);
           return;
         }
         this.setState({
-          ...this.processWeather(data),
-        }, ()=>{
+          ...processWeather(data),
+        }, () => {
           this.hideShowModule(false);
         });
       });
@@ -105,58 +96,6 @@ class WeatherForecast extends Component {
     }
   }
 
-  processWeather(data) {
-    if (!data || !data.main || typeof data.main.temp === 'undefined') {
-      // Did not receive usable new data.
-      // Maybe this needs a better check?
-      return;
-    }
-
-    const weatherObj = {
-      humidity: parseFloat(data.main.humidity),
-      temperature: roundValue(data.main.temp),
-    };
-
-    weatherObj.windSpeed = this.props.useBeaufort ? ms2Beaufort(roundValue(data.wind.speed))
-      : parseFloat(data.wind.speed).toFixed(0);
-
-    weatherObj.windDirection = deg2Cardinal(data.wind.deg);
-    weatherObj.windDegrees = data.wind.deg;
-    weatherObj.weatherType = iconTable[data.weather[0].icon];
-
-    const now = new Date();
-    const sunrise = new Date(data.sys.sunrise * 1000);
-    const sunset = new Date(data.sys.sunset * 1000);
-
-    // The moment().format('h') method has a bug on the Raspberry Pi.
-    // So we need to generate the timestring manually.
-    // See issue: https://github.com/MichMich/MagicMirror/issues/181
-    const sunriseSunsetDateObject = (sunrise < now && sunset > now) ? sunset : sunrise;
-    let timeString = moment(sunriseSunsetDateObject).format('HH:mm');
-    if (this.props.timeFormat !== 24) {
-      // var hours = sunriseSunsetDateObject.getHours() % 12 || 12;
-      if (this.props.showPeriod) {
-        if (this.props.showPeriodUpper) {
-          // timeString = hours + moment(sunriseSunsetDateObject).format(':mm A');
-          timeString = moment(sunriseSunsetDateObject).format('h:mm A');
-        } else {
-          // timeString = hours + moment(sunriseSunsetDateObject).format(':mm a');
-          timeString = moment(sunriseSunsetDateObject).format('h:mm a');
-        }
-      } else {
-        // timeString = hours + moment(sunriseSunsetDateObject).format(':mm');
-        timeString = moment(sunriseSunsetDateObject).format('h:mm');
-      }
-    }
-
-    weatherObj.sunriseSunsetTime = timeString;
-    weatherObj.sunriseSunsetIcon = (sunrise < now && sunset > now) ? 'wi-sunset' : 'wi-sunrise';
-    // this.show(this.config.animationSpeed, {lockString:this.identifier});
-    weatherObj.loading = false;
-    notifications.emit('NOTIFICATION', { type: 'CURRENTWEATHER_DATA', payload: data });
-    return weatherObj;
-  }
-
   getUrlParams() {
     let params = '?';
     if (this.props.locationID) {
@@ -175,33 +114,41 @@ class WeatherForecast extends Component {
 
     params += `&units=${this.props.units}`;
     params += `&lang=${this.props.lang}`;
+    params += `&cnt=${(((this.state.maxNumberOfDays < 1) || (this.state.maxNumberOfDays > 16)) ? 7 * 8 : this.state.maxNumberOfDays)}`;
     params += `&APPID=${this.props.appid}`;
-
     return params;
   }
-  
+
   updateWeather(callback) {
     if (this.props.appid === '') {
-      console.log("[ERROR] WeatherForecast: APPID not set!");
+      console.log('[ERROR] WeatherForecast: APPID not set!');
       return;
     }
 
-    const URL = `${this.props.apiBase}${this.props.apiVersion}/${this.props.forecastEndpoint}${this.getUrlParams()}`;
+    const URL = `${this.props.apiBase}${this.props.apiVersion}/${this.state.forecastEndpoint}${this.getUrlParams()}`;
     let retry = true;
-
     request({
       method: 'GET',
       url: URL,
     }, (error, response, body) => {
+      console.log(error);
+      console.log(response);
+      console.log(body);
       if (!error && response.statusCode === 200) {
         console.log(body);
         callback(JSON.parse(body));
         return;
       } else if (response.statusCode === 401) {
+        this.setState({
+          forecastEndpoint: 'forecast',
+          maxNumberOfDays: this.state.maxNumberOfDays * 8
+        });
+        console.log(WeatherForecast.moduleName + ": Your AppID does not support long term forecasts. Switching to fallback endpoint.");
         retry = true;
       } else {
         callback({ error: `${WeatherForecast.moduleName}: Could not load weather.` });
       }
+      console.log('hello');
       if (retry) {
         setTimeout(() => {
           this.updateModule();
@@ -324,28 +271,21 @@ WeatherForecast.defaultProps = {
   locationID: false,
   appid: "",
   units: "imperial",
+  showRainAmount: false,
   updateInterval: 600000, // every 10 minutes
   animationSpeed: 1000,
   timeFormat: 12,
-  showPeriod: true,
-  showPeriodUpper: false,
-  showWindDirection: true,
-  showWindDirectionAsArrow: true,
-  useBeaufort: true,
   lang: "en",
-  showHumidity: false,
-  showDegreeLabel: true,
-  showIndoorTemperature: false,
-  showIndoorHumidity: false,
+  fade: true,
+  fadePoint: 0.25,
+  colored: true,
+  scale: false,
   initialLoadDelay: 0, // 0 seconds delay
   retryDelay: 2500,
   apiVersion: "2.5",
   apiBase: "http://api.openweathermap.org/data/",
-  forecastEndpoint: "forecast/daily",
   appendLocationNameToHeader: true,
   calendarClass: "calendar",
-  colored: true,
-  onlyTemp: false,
   roundTemp: false
 };
 

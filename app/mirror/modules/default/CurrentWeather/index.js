@@ -197,7 +197,7 @@ class CurrentWeather extends Component {
       url: URL,
     }, (error, response, body) => {
       if (!error && response.statusCode === 200) {
-        console.log(body);
+        //console.log(body);
         callback(JSON.parse(body));
         return;
       } else if (response.statusCode === 401) {
