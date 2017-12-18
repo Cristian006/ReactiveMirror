@@ -20,8 +20,8 @@ class WeatherForecast extends Component {
   }
 
   state = {
-    forecastEndpoint: 'forecast',
-    maxNumberOfDays: 7,
+    forecastEndpoint: 'forecast/daily',
+    maxNumberOfDays: 1,
     fetchedLocationName: '',
     intervalId: null,
     windSpeed: null,
@@ -103,9 +103,9 @@ class WeatherForecast extends Component {
     } else if (this.props.location) {
       params += `q=${this.props.location}`;
     } else if (this.firstEvent && this.firstEvent.geo) {
-      params += `lat=${this.firstEvent.geo.lat}&lon=${this.firstEvent.geo.lon}`;
-    } else if (this.firstEvent && this.firstEvent.location) {
-      params += `q=${this.firstEvent.location}`;
+      params += `lat=${this.state.firstEvent.geo.lat}&lon=${this.state.firstEvent.geo.lon}`;
+    } else if (this.state.firstEvent && this.state.firstEvent.location) {
+      params += `q=${this.state.firstEvent.location}`;
     } else {
       console.log('hide???');
       // this.hide(this.props.animationSpeed, {lockString:this.identifier});
@@ -131,9 +131,6 @@ class WeatherForecast extends Component {
       method: 'GET',
       url: URL,
     }, (error, response, body) => {
-      console.log(error);
-      console.log(response);
-      console.log(body);
       if (!error && response.statusCode === 200) {
         console.log(body);
         callback(JSON.parse(body));
@@ -141,7 +138,7 @@ class WeatherForecast extends Component {
       } else if (response.statusCode === 401) {
         this.setState({
           forecastEndpoint: 'forecast',
-          maxNumberOfDays: this.state.maxNumberOfDays * 8
+          maxNumberOfDays: this.state.maxNumberOfDays * 8,
         });
         console.log(WeatherForecast.moduleName + ": Your AppID does not support long term forecasts. Switching to fallback endpoint.");
         retry = true;
@@ -160,6 +157,7 @@ class WeatherForecast extends Component {
   generateTable() {
     if (this.state.forecast.length > 0) {
       return this.state.forecast.map((f, indx) => {
+        console.log(f);
         let degreeLabel = '';
         if (this.props.scale) {
           switch (this.props.units) {
@@ -200,6 +198,7 @@ class WeatherForecast extends Component {
 
         return (
           <tr
+            key={`${f.day}_${indx}`}
             className={classNames({
               [styles.colored]: this.props.colored,
             })} 
@@ -257,7 +256,9 @@ class WeatherForecast extends Component {
         }}
       >
         <table className="small">
-          {this.generateTable()}
+          <tbody>
+            {this.generateTable()}
+          </tbody>
         </table>
       </div>
     );
