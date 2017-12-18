@@ -26,7 +26,6 @@ class WeatherForecast extends Component {
     intervalId: null,
     windSpeed: null,
     windDirection: null,
-    windDegrees: null,
     weatherType: null,
     forecast: [],
     loading: true
@@ -38,7 +37,6 @@ class WeatherForecast extends Component {
     }
 
     this.updateModule();
-    console.log(this.props.updateInterval);
     this.setState({
       intervalId: setInterval(() => {
         this.updateModule();
@@ -66,7 +64,6 @@ class WeatherForecast extends Component {
   }
 
   updateModule() {
-    console.log('update module');
     this.hideShowModule(true, () => {
       this.updateWeather((data) => {
         if (data.error) {
@@ -132,7 +129,6 @@ class WeatherForecast extends Component {
       url: URL,
     }, (error, response, body) => {
       if (!error && response.statusCode === 200) {
-        console.log(body);
         callback(JSON.parse(body));
         return;
       } else if (response.statusCode === 401) {
@@ -145,7 +141,6 @@ class WeatherForecast extends Component {
       } else {
         callback({ error: `${WeatherForecast.moduleName}: Could not load weather.` });
       }
-      console.log('hello');
       if (retry) {
         setTimeout(() => {
           this.updateModule();
@@ -157,7 +152,6 @@ class WeatherForecast extends Component {
   generateTable() {
     if (this.state.forecast.length > 0) {
       return this.state.forecast.map((f, indx) => {
-        console.log(f);
         let degreeLabel = '';
         if (this.props.scale) {
           switch (this.props.units) {
@@ -204,6 +198,7 @@ class WeatherForecast extends Component {
             })} 
             style={{ opacity: op }}
           >
+            <td className={styles.day}>{this.props.showTime ? f.timeOfDay : ''}</td>
             <td className={styles.day}>{f.day}</td>
             <td className={classNames({
               bright: true,
@@ -287,7 +282,8 @@ WeatherForecast.defaultProps = {
   apiBase: "http://api.openweathermap.org/data/",
   appendLocationNameToHeader: true,
   calendarClass: "calendar",
-  roundTemp: false
+  roundTemp: false,
+  showTime: true
 };
 
 WeatherForecast.propTypes = {

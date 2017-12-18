@@ -25,7 +25,7 @@ class CurrentWeather extends Component {
     intervalId: null,
     windSpeed: null,
     windDirection: null,
-    windDegrees: null,
+    windDegrees: 0,
     sunriseSunsetTime: null,
     sunriseSunsetIcon: null,
     temperature: null,
@@ -114,7 +114,6 @@ class CurrentWeather extends Component {
       // Maybe this needs a better check?
       return;
     }
-
     const weatherObj = {
       humidity: parseFloat(data.main.humidity),
       temperature: roundValue(data.main.temp),
@@ -270,6 +269,7 @@ class CurrentWeather extends Component {
             humidity={this.state.humidity}
             sunriseSunsetTime={this.state.sunriseSunsetTime}
             sunriseSunsetIcon={this.state.sunriseSunsetIcon}
+            units={this.props.units}
           />
         }
         <div className="large light">

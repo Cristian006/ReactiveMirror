@@ -5,7 +5,7 @@ export function parseWeather(forecast) {
   if (forecast.main) {
     t = { min: forecast.main.temp_min, max: forecast.main.temp_max };
   }
-  return { ...forecast, temp: t };
+  return { ...forecast, temp: t, timeOfDay: moment(forecast.dt, 'X').format('h A') };
 }
 
 export function processWeather(data) {
@@ -23,25 +23,23 @@ export function processWeather(data) {
       const forecast = { ...parseWeather(f) };
       const fDay = moment(forecast.dt, 'X').format('ddd');
       const hour = moment(forecast.dt, 'X').format('H');
-
       if (fDay !== lastDay) {
         const fData = {
           day: fDay,
           icon: iconTable[forecast.weather[0].icon],
           maxTemp: roundValue(forecast.temp.max),
           minTemp: roundValue(forecast.temp.min),
-          rain: roundValue(forecast.rain)
+          rain: roundValue(forecast.rain),
+          timeOfDay: forecast.timeOfDay
         };
 
         lastDay = fData;
         return fData;
-      } else {
-        forecastData.maxTemp = forecast.temp.max > parseFloat(forecastData.maxTemp) ? roundValue(forecast.temp.max) : forecastData.maxTemp;
-        forecastData.minTemp = forecast.temp.min < parseFloat(forecastData.minTemp) ? roundValue(forecast.temp.min) : forecastData.minTemp;
-
-        if (hour >= 8 && hour <= 17) {
-          forecastData.icon = iconTable[forecast.weather[0].icon];
-        }
+      }
+      forecastData.maxTemp = (forecast.temp.max > parseFloat(forecastData.maxTemp)) ? roundValue(forecast.temp.max) : forecastData.maxTemp;
+      forecastData.minTemp = (forecast.temp.min < parseFloat(forecastData.minTemp)) ? roundValue(forecast.temp.min) : forecastData.minTemp;
+      if (hour >= 8 && hour <= 17) {
+        forecastData.icon = iconTable[forecast.weather[0].icon];
       }
     });
   };
