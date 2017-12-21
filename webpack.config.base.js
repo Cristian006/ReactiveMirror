@@ -7,6 +7,7 @@ import webpack from 'webpack';
 import { dependencies as externals } from './app/package.json';
 import defaults from './app/mirror/config/defaults';
 import config from './app/mirror/config/config';
+import pkg from './app/package.json';
 
 export default {
   externals: Object.keys(externals || {}),
@@ -47,6 +48,7 @@ export default {
 
   plugins: [
     new webpack.DefinePlugin({
+      'process.env.MIRROR_VERSION': pckg.version;
       'process.env.MIRROR_CONFIG': JSON.stringify(process.env.MIRROR_CONFIG || { ...defaults, ...config }),
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
     }),

@@ -3,9 +3,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import classNames from 'classnames';
+import validUrl from 'valid-url';
 import request from 'request';
 import notifications from '../../../core/notifications';
 import { getLocaleSpecification } from './core/utils';
+import ical from 'ical';
 
 class Calendar extends Component {
 
@@ -42,16 +44,14 @@ class Calendar extends Component {
         };
       }),
       loaded: false,
-      calendarData: {}
-    });
-/*
-    this.updateModule();
-    this.setState({
+      calendarData: {},
       intervalId: setInterval(() => {
         this.updateModule();
       }, this.props.updateInterval)
     });
-*/
+
+    this.updateModule();
+
     notifications.on('NOTIFICATION', (arg) => {
       switch (arg.type) {
         case 'CALENDAR_EVENTS':
@@ -112,26 +112,104 @@ class Calendar extends Component {
     }
   }
 
+  fetchCalendarItems(callback) {
+    if (!validUrl.isUri(url)) {
+      console.log('There is no api Key');
+      return;
+    }
+
+		const nodeVersion = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
+    this.state.calendars.forEach(calendar => {
+      
+      let opts = {
+        headers: {
+          'User-Agent': `Mozilla/5.0 (Node.js ${nodeVersion}) MagicMirror/${process.env.MIRROR_VERSION} (https://github.com/cristian006/ReactiveMirror/)`
+        }
+      };
+
+      if (calendar.auth) {
+        if (calendar.auth.method === 'bearer') {
+          opts.auth = {
+            bearer: calendar.auth.pass
+          }
+  
+        } else {
+          opts.auth = {
+            user: calendar.auth.user,
+            pass: calendar.auth.pass
+          };
+  
+          opts.auth.sendImmediately = calednar.auth.method !== 'digest';
+        }
+      }
+      
+      ical.fromURL(calendar.url, opts, (err, data) => {
+        if (err) {
+          console.log('error getting calendar!');
+          return;
+        }
+        let newEvents = [];
+
+        let limitFunction = (date, i) => {
+          return i < maximumEntries;
+        }
+
+        let eventDate = (event, time) => {
+          return event[time].length === 8 ? moment(event[time], 'YYYYMMDD') : moment(new Date(event[time]));
+        }
+
+        console.log(data);
+      });
+    });
+  }
+
   hasCalendarURL(url) {
     return this.state.calendars.some((cal) => cal.url === url);
   }
 
-  addCalednar(_url, _auth, calendarConfig) {
-    notifications.emit('NOTIFICATION', {
-      type: 'ADD_CALENDAR',
-      payload: {
-        url: _url,
-        auth: _auth,
-        excludedEvents: calendarConfig.excludedEvents || this.props.excludedEvents,
-        maximumEntries: calendarConfig.maximumEntries || this.props.maximumEntries,
-        maximumNumberOfDays: calendarConfig.maximumNumberOfDays || this.props.maximumNumberOfDays,
-        fetchInterval: this.props.fetchInterval,
-      }
-    });
+  createEventList() {
+		var events = [];
+		var today = moment().startOf("day");
+		for (var c in this.state.calendarData) {
+			var calendar = this.state.calendarData[c];
+			for (var e in calendar) {
+				var event = calendar[e];
+				if(this.props.hidePrivate) {
+					if(event.class === "PRIVATE") {
+						  // do not add the current event, skip it
+						  continue;
+					}
+				}
+				event.url = c;
+				event.today = event.startDate >= today && event.startDate < (today + 24 * 60 * 60 * 1000);
+				events.push(event);
+			}
+		}
+
+		events.sort(function (a, b) {
+			return a.startDate - b.startDate;
+		});
+
+		return events;
+  }
+
+  generateDOM() {
+    if (this.props.displaySymbol) {
+      
+    }
   }
 
   render() {
+    let events = this.createEventList();
+    if(events.length === 0) {
+      return <table className="small dimmed">{(this.state.loaded) ? 'EMPTY' : 'LOADING'}</table>
+    }
 
+    return(
+      <table className="small">
+        {this.generateDOM()}   
+      </table>
+    );
   }
 }
 

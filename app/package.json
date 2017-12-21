@@ -15,9 +15,11 @@
   "license": "MIT",
   "dependencies": {
     "classnames": "^2.2.5",
+    "ical": "^0.5.0",
     "moment": "^2.19.3",
     "moment-timezone": "^0.5.14",
     "roboto-fontface": "^0.8.0",
+    "valid-url": "^1.0.9",
     "weathericons": "^2.1.0"
   }
 }
