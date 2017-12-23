@@ -12,6 +12,7 @@ import {
   capFirst,
   titleTransform
 } from './core/utils';
+import styles from './Calendar.css';
 
 class Calendar extends Component {
 
@@ -34,11 +35,12 @@ class Calendar extends Component {
     opacity: 0,
     hidden: true,
     intervalId: null,
-    refreshId: null,
     showHideTimer: null,
     newsItems: [],
     loaded: false,
     activeItem: -1,
+    calendars: [],
+    calendarData: {},
   };
 
   componentDidMount() {
@@ -59,16 +61,16 @@ class Calendar extends Component {
       intervalId: setInterval(() => {
         this.updateModule();
       }, this.props.updateInterval)
+    }, () => {
+      this.updateModule();
     });
-
-    this.updateModule();
 
     notifications.on('CALENDAR_NOTIFICATION', (arg) => {
       switch (arg.type) {
         case 'CALENDAR_EVENTS':
           if (this.hasCalendarURL(arg.payload.url)) {
             this.setState({
-              //calendarData: { ...this.state.calendarData, [`${arg.payload.url}`]: arg.payload.events },
+              calendarData: { ...this.state.calendarData, [arg.payload.url]: arg.payload.events },
               loaded: true
             });
     
@@ -391,12 +393,24 @@ class Calendar extends Component {
   generateDOM(events) {
     return events.map((event, indx, evts) => {
       const SymbolComponent = () => {
-        const symbols = [...this.symbolsForUrl(event.url)];
+        let symbols = this.symbolsForUrl(event.url);
+
+        if (typeof symbols === 'string') {
+          symbols = [symbols];
+        }
+
         return (
-          <td className="symbol aligh-right">
+          <td
+            className={
+              classNames({
+                [styles.symbol]: true,
+                'aligh-right': true
+              })
+            }
+          >
             {symbols.map((symbol, indx) => {
               return (
-                <span className={`fa fa-${symbol}`} style={{ paddingLeft: indx > 0 ? '5px' : '' }} />
+                <span key={`${symbol}_${indx}`} className={`fa fa-${symbol}`} style={{ paddingLeft: indx > 0 ? '5px' : '' }} />
               );
             })}
           </td>
@@ -414,8 +428,15 @@ class Calendar extends Component {
           }
         }
         return (
-          <td className={this.props.colored ? 'title bright' : 'title'}>
-            {`${titleTransform(event.title)}${repeatingCountTitle}`}
+          <td
+            className={
+              classNames({
+                [styles.title]: true,
+                'bright': this.props.colored
+              })
+            }
+          >
+            {`${titleTransform(event.title, this.props.titleReplace, this.props.maxTitleLength, this.props.wrapEvents)}${repeatingCountTitle}`}
           </td>
         );
       };
@@ -488,28 +509,38 @@ class Calendar extends Component {
             innerHTML = capFirst(`RUNNING ${moment(event.endDate, 'x').fromNow(true)}`);
           }
         }
-        let op = 1;
-        if (this.props.fade && this.props.fadePoint < 1) {
-          let fPoint = this.props.fadePoint > 0 ? this.props.fadePoint : 0;
-          let startPoint = evts.length * fPoint;
-          let steps = evts.length - startPoint;
-          if (indx >= startPoint) {
-            let currentStep = indx - startPoint;
-            op = 1 - ((1 / steps) * currentStep);
-          }
-        }
 
         return (
           <td
-            className="time light"
-            style={{ opacity: op }}>
+            className={
+              classNames({
+                [styles.time]: true,
+                light: true
+              })
+            }
+          >
             {innerHTML}
           </td>
         );
       };
 
+      let op = 1;
+      if (this.props.fade && this.props.fadePoint < 1) {
+        let fPoint = this.props.fadePoint > 0 ? this.props.fadePoint : 0;
+        let startPoint = evts.length * fPoint;
+        let steps = evts.length - startPoint;
+        if (indx >= startPoint) {
+          let currentStep = indx - startPoint;
+          op = 1 - ((1 / steps) * currentStep);
+        }
+      }
+
       return (
-        <tr className="normal" style={this.props.colored ? { color: this.colorForUrl(event.url) } : {}}>
+        <tr
+          key={`${indx}_${event.url}`}
+          className="normal"
+          style={this.props.colored ? { color: this.colorForUrl(event.url), opacity: op } : { opacity: op }}
+        >
           {
             this.props.displaySymbol &&
             <SymbolComponent />
@@ -524,7 +555,18 @@ class Calendar extends Component {
   render() {
     let events = this.createEventList();
     if (events.length === 0) {
-      return <table className="small dimmed">{(this.state.loaded) ? 'EMPTY' : 'LOADING'}</table>;
+      return (
+        <div
+          className={
+            classNames({
+              'small dimmed': true,
+              [styles.Calendar]: true
+            })
+          }
+        >
+          {(this.state.loaded) ? 'EMPTY' : 'LOADING'}
+        </div>
+      );
     }
 
     return (
@@ -543,7 +585,7 @@ Calendar.defaultProps = {
   fadeSpeed: 4000,
   updateInterval: 5 * 60 * 1000, // update the module to change the current item every 30 seconds
   animation: 'ease-in',
-  maximumEntries: 10, // Total Maximum Entries
+  maximumEntries: 8, // Total Maximum Entries
   maximumNumberOfDays: 365,
   displaySymbol: true,
   defaultSymbol: 'calendar', // Fontawesome Symbol see http://fontawesome.io/cheatsheet/
