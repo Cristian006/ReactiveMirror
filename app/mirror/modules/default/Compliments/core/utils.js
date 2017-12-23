@@ -1,21 +1,21 @@
 export const defaultCompliments = {
   anytime: [
-    'Hey there sexy!'
+    'Hey there beautiful!'
   ],
   morning: [
-    'Good morning, handsome!',
+    'Good morning, !',
     'Enjoy your day!',
     'How was your sleep?'
   ],
   afternoon: [
     'Hello, beauty!',
-    'You look sexy!',
+    'You look gorgeous!',
     'Looking good today!'
   ],
   evening: [
-    'Wow, you look hot!',
+    'Wow, you look great!',
     'You look nice!',
-    'Hi, sexy!'
+    'Hi, hot stuff!'
   ]
 };
 
