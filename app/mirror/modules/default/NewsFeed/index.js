@@ -88,7 +88,6 @@ class NewsFeed extends Component {
     let url = `${this.props.apiBase}${this.props.apiVersion}${this.props.apiEndpoint}sources=`;
     url += this.props.sources.join();
     url += `&apiKey=${this.props.apiKey}`;
-    console.log(url);
     return url;
   }
 

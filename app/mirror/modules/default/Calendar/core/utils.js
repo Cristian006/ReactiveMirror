@@ -1,4 +1,5 @@
 import React from 'react';
+
 export function shorten(stringToShorten: string, maxLength: number = 25, wrapEvents: boolean) {
   if (wrapEvents) {
     let temp = '';

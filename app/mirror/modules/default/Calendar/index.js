@@ -4,10 +4,14 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import classNames from 'classnames';
 import validUrl from 'valid-url';
-import request from 'request';
 import ical from 'ical';
 import notifications from '../../../core/notifications';
-import { isFullDayEvent } from './core/utils';
+import pckg from '../../../../package.json';
+import {
+  isFullDayEvent,
+  capFirst,
+  titleTransform
+} from './core/utils';
 
 class Calendar extends Component {
 
@@ -16,6 +20,14 @@ class Calendar extends Component {
     this.updateModule = this.updateModule.bind(this);
     this.hideShowModule = this.hideShowModule.bind(this);
     this.hasCalendarURL = this.hasCalendarURL.bind(this);
+    this.getLocaleSpecification = this.getLocaleSpecification.bind(this);
+    this.generateDOM = this.generateDOM.bind(this);
+    this.broadcastEvents = this.broadcastEvents.bind(this);
+    this.colorForUrl = this.colorForUrl.bind(this);
+    this.countTitleForUrl = this.countTitleForUrl.bind(this);
+    this.createEventList = this.createEventList.bind(this);
+    this.fetchCalendarItems = this.fetchCalendarItems.bind(this);
+    this.getCalendarProperty = this.getCalendarProperty.bind(this);
   }
 
   state = {
@@ -37,9 +49,9 @@ class Calendar extends Component {
         return {
           ...cal,
           url: cal.url.replace('webcal://', 'http://'),
-          excludedEvents: calendarConfig.excludedEvents || this.props.excludedEvents,
-          maximumEntries: calendarConfig.maximumEntries || this.props.maximumEntries,
-          maximumNumberOfDays: calendarConfig.maximumNumberOfDays || this.props.maximumNumberOfDays,
+          excludedEvents: cal.excludedEvents || this.props.excludedEvents,
+          maximumEntries: cal.maximumEntries || this.props.maximumEntries,
+          maximumNumberOfDays: cal.maximumNumberOfDays || this.props.maximumNumberOfDays,
         };
       }),
       loaded: false,
@@ -56,7 +68,7 @@ class Calendar extends Component {
         case 'CALENDAR_EVENTS':
           if (this.hasCalendarURL(arg.payload.url)) {
             this.setState({
-              calendarData: { ...this.state.calendarData, [arg.payload.url]: arg.payload.events },
+              //calendarData: { ...this.state.calendarData, [`${arg.payload.url}`]: arg.payload.events },
               loaded: true
             });
     
@@ -82,10 +94,8 @@ class Calendar extends Component {
 
   updateModule() {
     if (!this.state.loaded) {
-      this.hideShowModule(true, () => {
-        this.fetchCalendarItems();
-        this.hideShowModule(false);
-      });
+      this.fetchCalendarItems();
+      this.hideShowModule(false);
     } else {
       this.fetchCalendarItems();
     }
@@ -118,10 +128,10 @@ class Calendar extends Component {
         });
         return;
       }
-
+      const userAgent = `Mozilla/5.0 (Node.js ${nodeVersion}) MagicMirror/${pckg.version} (https://github.com/cristian006/ReactiveMirror/)`;
       const opts = {
         headers: {
-          'User-Agent': `Mozilla/5.0 (Node.js ${nodeVersion}) MagicMirror/${process.env.MIRROR_VERSION} (https://github.com/cristian006/ReactiveMirror/)`
+          'User-Agent': userAgent,
         }
       };
 
@@ -324,7 +334,7 @@ class Calendar extends Component {
 
   getCalendarProperty(url, property, defaultValue) {
     for (let c in this.state.calendars) {
-      let calendars = this.state.calendars[c];
+      const calendar = this.state.calendars[c];
       if (calendar.url === url && calendar.hasOwnProperty(property)) {
         return calendar[property];
       }
@@ -379,25 +389,133 @@ class Calendar extends Component {
   }
 
   generateDOM(events) {
-    return events.map((event) => {
+    return events.map((event, indx, evts) => {
       const SymbolComponent = () => {
-        let symbols = [...this.symbolsForUrl(event.url)];
+        const symbols = [...this.symbolsForUrl(event.url)];
         return (
           <td className="symbol aligh-right">
             {symbols.map((symbol, indx) => {
               return (
-                <span className={`fa fa-${symbol}`} style={{paddingLeft: indx > 0 ? '5px' : '' }} />
+                <span className={`fa fa-${symbol}`} style={{ paddingLeft: indx > 0 ? '5px' : '' }} />
               );
             })}
           </td>
         );
       };
+
+      const TitleComponent = () => {
+        let repeatingCountTitle = '';
+        if (this.props.displayRepeatingCountTitle) {
+          repeatingCountTitle = this.countTitleForUrl(event.url);
+          if (repeatingCountTitle !== '') {
+            const thisYear = new Date(parseInt(event.startDate)).getFullYear();
+            const yearDiff = thisYear - event.firstYear;
+            repeatingCountTitle = `, ${yearDiff}. ${repeatingCountTitle}`;
+          }
+        }
+        return (
+          <td className={this.props.colored ? 'title bright' : 'title'}>
+            {`${titleTransform(event.title)}${repeatingCountTitle}`}
+          </td>
+        );
+      };
+
+      const TimeComponent = () => {
+        let now = new Date();
+                // Define second, minute, hour, and day variables
+        let oneSecond = 1000; // 1,000 milliseconds
+        let oneMinute = oneSecond * 60;
+        let oneHour = oneMinute * 60;
+        let oneDay = oneHour * 24;
+        let innerHTML;
+        if (event.fullDayEvent) {
+          if (event.today) {
+            innerHTML = capFirst('Today');
+          } else if (event.startDate - now < oneDay && event.startDate - now > 0) {
+            innerHTML = capFirst('TOMORROW');
+          } else if (event.startDate - now < 2 * oneDay && event.startDate - now > 0) {
+            innerHTML = capFirst(moment(event.startDate, 'x').fromNow());
+          } else {
+            /* Check to see if the user displays absolute or relative dates with their events
+            * Also check to see if an event is happening within an 'urgency' time frameElement
+            * For example, if the user set an .urgency of 7 days, those events that fall within that
+            * time frame will be displayed with 'in xxx' time format or moment.fromNow()
+            *
+            * Note: this needs to be put in its own function, as the whole thing repeats again verbatim
+            */
+            if (this.props.timeFormat === 'absolute') {
+              if ((this.props.urgency > 1) && (event.startDate - now < (this.props.urgency * oneDay))) {
+                // This event falls within the config.urgency period that the user has set
+                innerHTML = capFirst(moment(event.startDate, "x").fromNow());
+              } else {
+                innerHTML = capFirst(moment(event.startDate, "x").format(this.config.fullDayEventDateFormat));
+              }
+            } else {
+              innerHTML = capFirst(moment(event.startDate, "x").fromNow());
+            }
+          }
+        } else {
+          if (event.startDate >= new Date()) {
+            if (event.startDate - now < 2 * oneDay) {
+              // This event is within the next 48 hours (2 days)
+              if (event.startDate - now < this.props.getRelative * oneHour) {
+                // If event is within 6 hour, display 'in xxx' time format or moment.fromNow()
+                innerHTML = capFirst(moment(event.startDate, "x").fromNow());
+              } else {
+                // Otherwise just say 'Today/Tomorrow at such-n-such time'
+                innerHTML = capFirst(moment(event.startDate, "x").calendar());
+              }
+            } else {
+              /* Check to see if the user displays absolute or relative dates with their events
+              * Also check to see if an event is happening within an 'urgency' time frameElement
+              * For example, if the user set an .urgency of 7 days, those events that fall within that
+              * time frame will be displayed with 'in xxx' time format or moment.fromNow()
+              *
+              * Note: this needs to be put in its own function, as the whole thing repeats again verbatim
+              */
+              if (this.props.timeFormat === 'absolute') {
+                if ((this.props.urgency > 1) && (event.startDate - now < (this.props.urgency * oneDay))) {
+                  // This event falls within the config.urgency period that the user has set
+                  innerHTML = capFirst(moment(event.startDate, "x").fromNow());
+                } else {
+                  innerHTML = capFirst(moment(event.startDate, "x").format(this.props.dateFormat));
+                }
+              } else {
+                innerHTML = capFirst(moment(event.startDate, "x").fromNow());
+              }
+            }
+          } else {
+            innerHTML = capFirst(`RUNNING ${moment(event.endDate, 'x').fromNow(true)}`);
+          }
+        }
+        let op = 1;
+        if (this.props.fade && this.props.fadePoint < 1) {
+          let fPoint = this.props.fadePoint > 0 ? this.props.fadePoint : 0;
+          let startPoint = evts.length * fPoint;
+          let steps = evts.length - startPoint;
+          if (indx >= startPoint) {
+            let currentStep = indx - startPoint;
+            op = 1 - ((1 / steps) * currentStep);
+          }
+        }
+
+        return (
+          <td
+            className="time light"
+            style={{ opacity: op }}>
+            {innerHTML}
+          </td>
+        );
+      };
+
       return (
         <tr className="normal" style={this.props.colored ? { color: this.colorForUrl(event.url) } : {}}>
           {
             this.props.displaySymbol &&
             <SymbolComponent />
           }
+          <TitleComponent />
+          <TimeComponent />
         </tr>
       );
     });

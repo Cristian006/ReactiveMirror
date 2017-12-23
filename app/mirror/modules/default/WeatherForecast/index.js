@@ -195,7 +195,7 @@ class WeatherForecast extends Component {
             key={`${f.day}_${indx}`}
             className={classNames({
               [styles.colored]: this.props.colored,
-            })} 
+            })}
             style={{ opacity: op }}
           >
             <td className={styles.day}>{this.props.showTime ? f.timeOfDay : ''}</td>
