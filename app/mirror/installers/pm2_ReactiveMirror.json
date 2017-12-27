@@ -1,0 +1,7 @@
+{
+  "apps" : [{
+    "name"        : "ReactiveMirror",
+    "script"      : "/home/pi/ReactiveMirror/app/mirror/installers/rm.sh",
+    "watch"       : ["/home/pi/ReactiveMirror/app/mirror/config/config.js"]
+  }]
+}
