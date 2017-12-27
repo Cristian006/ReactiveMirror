@@ -17,7 +17,7 @@
 
 ## Screenshot
 
-![Reactive Mirror Demo](./app/mirror/splashscreen/splash_halt.png)
+![Reactive Mirror Demo](./assets/LogoBlack.png)
 
 ## Install
 
