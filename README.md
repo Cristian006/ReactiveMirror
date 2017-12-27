@@ -1,6 +1,6 @@
 # Reactive Mirror
 
-### An application built with React + Electron meant to run on the Raspberry Pi for a DIY 'Magic Mirror' modeled after [Magic Mirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
+### An application built with React + Electron meant to run on the Raspberry Pi for a DIY Smart Mirror modeled after [Magic Mirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
 
 <br/>
 
