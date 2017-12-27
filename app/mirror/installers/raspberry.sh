@@ -16,7 +16,7 @@ echo '|__/  |__/ \_______/ \_______/ \_______/   \___/  |__/    \_/     \_______
 echo -e "\e[0m"
 
 # Define the tested version of Node.js.
-NODE_TESTED="v5.1.0"
+NODE_TESTED="v8.9.0"
 
 # Determine which Pi is running.
 ARM=$(uname -m) 
