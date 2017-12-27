@@ -138,7 +138,7 @@ if command_exists plymouth; then
 			sudo mkdir $THEME_DIR/ReactiveMirror
 		fi
 
-		if sudo cp ~/ReactiveMirror/app/mirror/splashscreen/splash.png $THEME_DIR/ReactiveMirror/app/mirror/splash.png && sudo cp ~/ReactiveMirror/app/mirror/splashscreen/ReactiveMirror.plymouth $THEME_DIR/ReactiveMirror/ReactiveMirror.plymouth && sudo cp ~/ReactiveMirror/splashscreen/ReactiveMirror.script $THEME_DIR/ReactiveMirror/app/mirror/ScreenReactiveMirror.script; then
+		if sudo cp ~/ReactiveMirror/app/mirror/splashscreen/splash.png $THEME_DIR/ReactiveMirror/splash.png && sudo cp ~/ReactiveMirror/splashscreen/ReactiveMirror.plymouth $THEME_DIR/ReactiveMirror/ReactiveMirror.plymouth && sudo cp ~/ReactiveMirror/splashscreen/ReactiveMirror.script $THEME_DIR/ReactiveMirror/ReactiveMirror.script; then
 			echo -e "\e[90mSplashscreen: Theme copied successfully.\e[0m"
 			if sudo plymouth-set-default-theme -R ReactiveMirror; then
 				echo -e "\e[92mSplashscreen: Changed theme to ReactiveMirror successfully.\e[0m"
