@@ -106,7 +106,7 @@ if [ -d "$HOME/ReactiveMirror" ] ; then
 fi
 
 echo -e "\e[96mCloning ReactiveMirror ...\e[90m"
-if git clone https://github.com/Cristian006/ReactiveMirror.git; then 
+if git clone pi-install https://github.com/Cristian006/ReactiveMirror.git; then 
 	echo -e "\e[92mCloning ReactiveMirror Done!\e[0m"
 else
 	echo -e "\e[91mUnable to clone ReactiveMirror."
