@@ -116,15 +116,7 @@ fi
 cd ~/ReactiveMirror || exit
 # Use sample config for start ReactiveMirror
 cp app/mirror/config/config.js.sample app/mirror/config/config.js
-
-cd ~/ReactiveMirror || exit
-echo -e "\e[96mInstalling app dependencies ...\e[90m"
-if npm install; then 
-	echo -e "\e[92mApp dependencies installation Done!\e[0m"
-else
-	echo -e "\e[91mUnable to install app dependencies!"
-	exit;
-fi
+echo -e "\e[92mCreated mirror config from sample!\e[0m"
 
 cd ~/ReactiveMirror/app || exit
 echo -e "\e[96mInstalling Mirror dependencies ...\e[90m"
@@ -132,6 +124,15 @@ if npm install; then
 	echo -e "\e[92mMirror dependencies installation done!\e[0m"
 else
 	echo -e "\e[91mUnable to install Mirror dependencies!"
+	exit;
+fi
+
+cd ~/ReactiveMirror || exit
+echo -e "\e[96mInstalling app dependencies ...\e[90m"
+if npm install; then 
+	echo -e "\e[92mApp dependencies installation Done!\e[0m"
+else
+	echo -e "\e[91mUnable to install app dependencies!"
 	exit;
 fi
 
