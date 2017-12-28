@@ -79,7 +79,7 @@ if $NODE_INSTALL; then
 	# The NODE_STABLE_BRANCH variable will need to be manually adjusted when a new branch is released. (e.g. 7.x)
 	# Only tested (stable) versions are recommended as newer versions could break ReactiveMirror.
 	
-	NODE_STABLE_BRANCH="6.x"
+	NODE_STABLE_BRANCH="7.x"
 	curl -sL https://deb.nodesource.com/setup_$NODE_STABLE_BRANCH | sudo -E bash -
 	sudo apt-get install -y nodejs
 	echo -e "\e[92mNode.js installation Done!\e[0m"
@@ -117,10 +117,10 @@ fi
 cd ~/ReactiveMirror/app || exit
 echo -e "\e[96mInstalling Mirror dependencies ...\e[90m"
 if npm install; then
-  echo -e "\e[92mMirror dependencies installation done!\e[0m"
+	echo -e "\e[92mMirror dependencies installation done!\e[0m"
 else
-  echo -e "\e[91mUnable to install Mirror dependencies!"
-  exit;
+	echo -e "\e[91mUnable to install Mirror dependencies!"
+	exit;
 fi
 
 cd ~/ReactiveMirror || exit
