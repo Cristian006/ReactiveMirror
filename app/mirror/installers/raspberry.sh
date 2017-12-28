@@ -114,6 +114,10 @@ else
 fi
 
 cd ~/ReactiveMirror || exit
+# Use sample config for start ReactiveMirror
+cp app/mirror/config/config.js.sample app/mirror/config/config.js
+
+cd ~/ReactiveMirror || exit
 echo -e "\e[96mInstalling app dependencies ...\e[90m"
 if npm install; then 
 	echo -e "\e[92mApp dependencies installation Done!\e[0m"
@@ -130,10 +134,6 @@ else
 	echo -e "\e[91mUnable to install Mirror dependencies!"
 	exit;
 fi
-
-cd ~/ReactiveMirror || exit
-# Use sample config for start ReactiveMirror
-cp app/mirror/config/config.js.sample app/mirror/config/config.js
 
 # Check if plymouth is installed (default with PIXEL desktop environment), then install custom splashscreen.
 echo -e "\e[96mCheck plymouth installation ...\e[0m"
