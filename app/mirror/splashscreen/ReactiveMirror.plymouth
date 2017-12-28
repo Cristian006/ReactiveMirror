@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=ReactiveMirror
+Description=Mirror Splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/ReactiveMirror
+ScriptFile=/usr/share/plymouth/themes/ReactiveMirror/ReactiveMirror.script

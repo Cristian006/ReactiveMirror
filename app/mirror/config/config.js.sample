@@ -1,0 +1,75 @@
+/*
+* Reactive Mirror Config Sample
+*/
+
+export default {
+  language: 'en',
+  timeFormat: 24,
+  units: 'metric',
+  modules: [
+    {
+      name: 'Clock',
+      position: 'top_left',
+    },
+    {
+      name: 'Calendar',
+      position: 'top_left',
+      config: {
+        calendars: [
+          {
+            symbol: 'calendar-check-o ',
+            url: 'webcal://www.calendarlabs.com/templates/ical/US-Holidays.ics'
+          }
+        ]
+      }
+    },
+    {
+      name: 'CurrentWeather',
+      position: 'top_right',
+      config: {
+        location: 'New York',
+        locationID: '5128581',  // ID from http://www.openweathermap.org/help/city_list.txt
+        appid: '9d9b5838beba2615ed77f0b2c279fec1'
+      }
+    },
+    {
+      name: 'WeatherForecast',
+      position: 'top_right',
+      config: {
+        location: 'New York',
+        locationID: '5128581',  // ID from http://www.openweathermap.org/help/city_list.txt
+        appid: '9d9b5838beba2615ed77f0b2c279fec1'
+      }
+    },
+    {
+      name: 'Compliments',
+      position: 'lower_third',
+    },
+    {
+      name: 'Snow',
+      position: 'fullscreen_above',
+      hide: true,
+      config: {
+        flakCount: 100,
+      }
+    },
+    {
+      name: 'NewsFeed',
+      position: 'bottom_bar',
+      config: {
+        apiKey: 'd477824bd6c64b31bf37ff9a2fb8f723',
+        showSourceTitle: true,
+        showPublishDate: true
+      }
+    },
+    {
+      name: 'Jokes',
+      hide: true,
+      position: 'bottom_bar',
+    },
+    {
+      name: 'alert',
+      hide: true,
+    }
+  ]
+};

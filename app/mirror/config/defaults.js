@@ -5,7 +5,6 @@ export default {
   timeFormat: 24,
   units: 'metric',
   zoom: 1,
-  customCss: 'css/custom.css',
   modules: [
     {
       module: 'updatenotification',
@@ -16,7 +15,7 @@ export default {
       position: 'upper_third',
       classes: 'large thin',
       config: {
-        text: 'Magic Mirror<sup>2</sup>'
+        text: 'Reactive Mirror'
       }
     },
     {
@@ -50,10 +49,5 @@ export default {
         text: 'www.michaelteeuw.nl'
       }
     },
-  ],
-
-  paths: {
-    modules: 'modules',
-    vendor: 'vendor'
-  },
+  ]
 };

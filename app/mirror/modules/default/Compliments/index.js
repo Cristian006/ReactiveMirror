@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import classNames from 'classnames';
 import styles from './Compliments.css';
-import { defaultCompliments, getRandom, complimentFile } from './core/utils';
+import notifications from '../../../core/notifications';
+import { defaultCompliments, getRandom, complimentFile, weatherIconTable } from './core/utils';
 
 class Compliments extends Component {
 
@@ -18,7 +19,7 @@ class Compliments extends Component {
       });
     }
 
-    this.updateCompliments = this.updateCompliments.bind(this);
+    this.updateModule = this.updateModule.bind(this);
     this.hideShowModule = this.hideShowModule.bind(this);
     this.randomIndex = this.randomIndex.bind(this);
     this.complimentArray = this.complimentArray.bind(this);
@@ -37,11 +38,21 @@ class Compliments extends Component {
   };
 
   componentDidMount() {
-    this.updateCompliments();
+    this.updateModule();
     this.setState({
       intervalId: setInterval(() => {
-        this.updateCompliments();
+        this.updateModule();
       }, this.props.updateInterval),
+    });
+
+    notifications.on('NOTIFICATION', (arg) => {
+      switch (arg.type) {
+        case 'CURRENTWEATHER_DATA':
+          this.setState({
+            currentWeatherType: weatherIconTable[arg.payload.weather[0].icon]
+          });
+          break;
+      }
     });
   }
 
@@ -105,7 +116,7 @@ class Compliments extends Component {
     return compliments;
   }
 
-  updateCompliments() {
+  updateModule() {
     this.hideShowModule(true, () => {
       this.setState({
         complimentIndex: this.randomIndex(),

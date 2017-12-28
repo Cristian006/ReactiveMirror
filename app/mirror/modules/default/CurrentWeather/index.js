@@ -1,17 +1,20 @@
-/*
 // @flow
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment-timezone';
-import WeatherInfo from './WeatherInfo';
-import { roundValue, ms2Beaufort, deg2Cardinal } from './core/utils';
+import request from 'request';
+import styles from './CurrentWeather.css';
+import WeatherDetail from './WeatherDetail';
+import { roundValue, ms2Beaufort, deg2Cardinal, iconTable } from './core/utils';
+import notifications from '../../../core/notifications';
 
 class CurrentWeather extends Component {
 
   constructor(props: any) {
     super(props);
     this.updateModule = this.updateModule.bind(this);
+    this.hideShowModule = this.hideShowModule.bind(this);
     this.processWeather = this.processWeather.bind(this);
     this.updateWeather = this.updateWeather.bind(this);
     this.getHeader = this.getHeader.bind(this);
@@ -22,10 +25,11 @@ class CurrentWeather extends Component {
     intervalId: null,
     windSpeed: null,
     windDirection: null,
-    windDegrees: null,
+    windDegrees: 0,
     sunriseSunsetTime: null,
     sunriseSunsetIcon: null,
     temperature: null,
+    humidity: null,
     indoorTemperature: null,
     indoorHumidity: null,
     weatherType: null,
@@ -36,26 +40,72 @@ class CurrentWeather extends Component {
     if (this.props.language) {
       moment.loacale(this.props.language);  
     }
+
     this.updateModule();
     this.setState({
       intervalId: setInterval(() => {
         this.updateModule();
       }, this.props.updateInterval),
     });
+
+    notifications.on('NOTIFICATION', (arg) => {
+      switch (arg.type) {
+        case 'CALENDAR_EVENTS':
+          for (var e in arg.payload) {
+            if (e.location || e.geo) {
+              this.setState({
+                firstEvent: event,
+              });
+            }
+          }
+          break;
+        case 'INDOOR_TEMPURATURE':
+          this.setState({
+            indoorTemperature: roundValue(arg.payload)
+          });
+          break;
+        case 'INDOOR_HUMIDITY':
+          this.setState({
+            indoorHumidity: roundValue(arg.payload)
+          });
+          break;
+      }
+    });
   }
 
   componentWillUnmount() {
     clearInterval(this.state.intervalId);
+    clearTimeout(this.state.showHideTimer);
   }
 
   updateModule() {
     this.hideShowModule(true, () => {
-      this.setState({
-        ...this.processWeather(data),
-      }, () => {
-        this.hideShowModule(false);
+      this.updateWeather((data) => {
+        if(data.error) {
+          console.log(data.error);
+          return;
+        }
+        this.setState({
+          ...this.processWeather(data),
+        }, ()=>{
+          this.hideShowModule(false);
+        });
       });
     });
+  }
+
+  hideShowModule(hide: boolean, callback: any) {
+    this.setState({
+      opacity: hide ? 0 : 1,
+      hidden: hide
+    });
+    if (hide && callback) {
+      this.setState({
+        showHideTimer: setTimeout(() => { callback(); }, this.props.fadeSpeed / 2),
+      });
+    } else {
+      clearTimeout(this.state.showHideTimer);
+    }
   }
 
   processWeather(data) {
@@ -64,18 +114,17 @@ class CurrentWeather extends Component {
       // Maybe this needs a better check?
       return;
     }
-
     const weatherObj = {
-      humidity: parseFloat(data.min.humidity),
-      temperature: roundValue(data.min.temp),
+      humidity: parseFloat(data.main.humidity),
+      temperature: roundValue(data.main.temp),
     };
 
     weatherObj.windSpeed = this.props.useBeaufort ? ms2Beaufort(roundValue(data.wind.speed))
       : parseFloat(data.wind.speed).toFixed(0);
 
     weatherObj.windDirection = deg2Cardinal(data.wind.deg);
-    weatherObj.windDeg = data.wind.deg;
-    weatherObj.weatherType = this.props.iconTable[data.weather[0].icon];
+    weatherObj.windDegrees = data.wind.deg;
+    weatherObj.weatherType = iconTable[data.weather[0].icon];
 
     const now = new Date();
     const sunrise = new Date(data.sys.sunrise * 1000);
@@ -106,7 +155,8 @@ class CurrentWeather extends Component {
     weatherObj.sunriseSunsetIcon = (sunrise < now && sunset > now) ? 'wi-sunset' : 'wi-sunrise';
     // this.show(this.config.animationSpeed, {lockString:this.identifier});
     weatherObj.loading = false;
-    // this.sendNotification('CURRENTWEATHER_DATA', {data: data});
+    notifications.emit('NOTIFICATION', { type: 'CURRENTWEATHER_DATA', payload: data });
+    return weatherObj;
   }
 
   getUrlParams() {
@@ -120,7 +170,8 @@ class CurrentWeather extends Component {
     } else if (this.firstEvent && this.firstEvent.location) {
       params += `q=${this.firstEvent.location}`;
     } else {
-      this.hide(this.props.animationSpeed, {lockString:this.identifier});
+      console.log('hide???');
+      // this.hide(this.props.animationSpeed, {lockString:this.identifier});
       return;
     }
 
@@ -131,39 +182,34 @@ class CurrentWeather extends Component {
     return params;
   }
   
-  updateWeather() {
+  updateWeather(callback) {
     if (this.props.appid === '') {
-      Log.error("CurrentWeather: APPID not set!");
+      console.log("[ERROR] CurrentWeather: APPID not set!");
       return;
     }
 
-    let url = `${this.props.apiBase}${this.props.apiVersion}/${this.props.weatherEndpoint}${this.getParams()}`;
-    let self = this;
+    const URL = `${this.props.apiBase}${this.props.apiVersion}/${this.props.weatherEndpoint}${this.getUrlParams()}`;
     let retry = true;
 
-    let weatherRequest = new XMLHttpRequest();
-    weatherRequest.open('GET', url, true);
-    
-    weatherRequest.onreadystatechange = (response) => {
-      if (this.readyState === 4) {
-        if (this.status === 200) {
-          this.processWeather(JSON.parse(response));
-        } else if (this.status === 401) {
-          // self.updateDom(self.config.animationSpeed);
-
-          // Log.error(self.name + ": Incorrect APPID.");
-          retry = true;
-        } else {
-          Log.error(CurrentWeather.moduleName + ": Could not load weather.");
-        }
-
-        if (retry) {
-          this.scheduleUpdate((!this.loading) ? -1 : this.props.retryDelay);
-        }
+    request({
+      method: 'GET',
+      url: URL,
+    }, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        //console.log(body);
+        callback(JSON.parse(body));
+        return;
+      } else if (response.statusCode === 401) {
+        retry = true;
+      } else {
+        callback({ error: `${CurrentWeather.moduleName}: Could not load weather.` });
       }
-    };
-    
-    weatherRequest.send();
+      if (retry) {
+        setTimeout(() => {
+          this.updateModule();
+        }, this.state.loading ? 0 : this.props.retryDelay);
+      }
+    });
   }
   
   getHeader() {
@@ -176,18 +222,22 @@ class CurrentWeather extends Component {
   render() {
     if (!this.props.appid) {
       return (
-        <div className="dimmed light small">Please set the correct openweather <i>appid</i> in the config for module: {this.moduleName}.</div>
+        <div className="dimmed light small">
+          Please set the correct openweather <i>appid</i> in the config for module: {this.moduleName}.
+        </div>
       );
     }
 
     if (this.state.loading) {
       return (
-        <div className="dimmed light small">Loading</div>
+        <div className="dimmed light small">
+          Loading
+        </div>
       );
     }
 
     let degreeLabel = '';
-    if (this.props.degreeLabel) {
+    if (this.props.showDegreeLabel) {
       switch (this.props.units) {
         case 'metric':
           degreeLabel = 'C';
@@ -201,22 +251,49 @@ class CurrentWeather extends Component {
       }
     }
 
-    if (this.config.showIndoorHumidity && this.indoorHumidity) {
-      
-    }	
     return (
-      <div>
+      <div
+        className={styles.currentweather}
+        style={{
+          transition: `opacity ${(this.props.fadeSpeed / 2)}ms ${this.props.animation}`,
+          opacity: this.state.opacity
+        }}
+      >
         {
           (!this.props.onlyTemp) &&
-          <WeatherInfo />
+          <WeatherDetail
+            showWindDirection={this.props.showWindDirection}
+            showWindDirectionAsArrow={this.props.showWindDirectionAsArrow}
+            windDegrees={this.state.windDegrees}
+            windSpeed={this.state.windSpeed}
+            humidity={this.state.humidity}
+            sunriseSunsetTime={this.state.sunriseSunsetTime}
+            sunriseSunsetIcon={this.state.sunriseSunsetIcon}
+            units={this.props.units}
+          />
         }
         <div className="large light">
-          <span className={`wi weathericon ${this.props.weatherType}`} />
-          <span className="bright">{this.state.temperature}&deg;{degreeLabel}</span>
+          <span
+            className={
+              classNames({
+                wi: true,
+                [this.state.weatherType]: true,
+                [styles.weathericon]: true
+              })
+            }
+            style={{
+              paddingRight: '8px',
+            }}
+          />
+          <span className="bright">{this.state.temperature}{this.props.showDegreeLabel ? <span>&deg;{degreeLabel}</span> : ''}</span>
           {
             (this.props.showIndoorTemperature && this.state.indoorTemperature) &&
             <span>
-              <span className="fa fa-home" />
+              <span className={classNames({
+                'fa fa-home': true,
+                [styles.weathericon]: true
+              })}
+              />
               <span className="bright">{this.state.indoorTemperature}&deg;{degreeLabel}</span>
             </span>
           }
@@ -239,18 +316,18 @@ CurrentWeather.defaultProps = {
   location: false,
   locationID: false,
   appid: "",
-  units: config.units,
-  updateInterval: 10 * 60 * 1000, // every 10 minutes
+  units: "imperial",
+  updateInterval: 600000, // every 10 minutes
   animationSpeed: 1000,
-  timeFormat: config.timeFormat,
+  timeFormat: 12,
   showPeriod: true,
   showPeriodUpper: false,
   showWindDirection: true,
-  showWindDirectionAsArrow: false,
+  showWindDirectionAsArrow: true,
   useBeaufort: true,
-  lang: config.language,
+  lang: "en",
   showHumidity: false,
-  degreeLabel: false,
+  showDegreeLabel: true,
   showIndoorTemperature: false,
   showIndoorHumidity: false,
   initialLoadDelay: 0, // 0 seconds delay
@@ -261,27 +338,7 @@ CurrentWeather.defaultProps = {
   appendLocationNameToHeader: true,
   calendarClass: "calendar",
   onlyTemp: false,
-  roundTemp: false,
-  iconTable: {
-    "01d": "wi-day-sunny",
-    "02d": "wi-day-cloudy",
-    "03d": "wi-cloudy",
-    "04d": "wi-cloudy-windy",
-    "09d": "wi-showers",
-    "10d": "wi-rain",
-    "11d": "wi-thunderstorm",
-    "13d": "wi-snow",
-    "50d": "wi-fog",
-    "01n": "wi-night-clear",
-    "02n": "wi-night-cloudy",
-    "03n": "wi-night-cloudy",
-    "04n": "wi-night-cloudy",
-    "09n": "wi-night-showers",
-    "10n": "wi-night-rain",
-    "11n": "wi-night-thunderstorm",
-    "13n": "wi-night-snow",
-    "50n": "wi-night-alt-cloudy-windy"
-  },
+  roundTemp: false
 };
 
 CurrentWeather.propTypes = {
@@ -292,4 +349,3 @@ CurrentWeather.propTypes = {
 };
 
 export default CurrentWeather;
-*/

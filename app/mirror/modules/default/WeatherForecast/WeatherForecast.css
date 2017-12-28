@@ -1,0 +1,27 @@
+.WeatherForecast .day {
+  padding-left: 0;
+  padding-right: 25px;
+}
+
+.WeatherForecast .weathericon {
+  padding-right: 30px;
+  text-align: center;
+}
+
+.WeatherForecast .minTemp {
+  padding-left: 20px;
+  padding-right: 0;
+}
+
+.WeatherForecast .rain {
+  padding-left: 20px;
+  padding-right: 0;
+}
+
+.WeatherForecast tr.colored .minTemp {
+    color: #BCDDFF;
+}
+
+.WeatherForecast tr.colored .maxTemp {
+    color: #FF8E99;
+}
