@@ -132,8 +132,13 @@ echo -e "\e[96mInstalling app dependencies ...\e[90m"
 if npm install; then 
 	echo -e "\e[92mApp dependencies installation Done!\e[0m"
 else
-	echo -e "\e[91mUnable to install app dependencies!"
-	exit;
+	echo -e "\e[91mUnable to install all app dependencies!"
+	read -r -p "Do you want to continue through with the installation? [y/N] " response
+	if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+			echo -e "\e[92mContinuing with installation!\e[0m"
+	else
+			exit
+	fi
 fi
 
 # Check if plymouth is installed (default with PIXEL desktop environment), then install custom splashscreen.
