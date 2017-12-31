@@ -29,7 +29,7 @@ export default {
       config: {
         location: 'New York',
         locationID: '5128581',  // ID from http://www.openweathermap.org/help/city_list.txt
-        appid: 'YOUROWN'
+        appid: ''
       }
     },
     {
@@ -38,7 +38,7 @@ export default {
       config: {
         location: 'New York',
         locationID: '5128581',  // ID from http://www.openweathermap.org/help/city_list.txt
-        appid: 'YOUROWN'
+        appid: ''
       }
     },
     {
@@ -57,7 +57,7 @@ export default {
       name: 'NewsFeed',
       position: 'bottom_bar',
       config: {
-        apiKey: 'YOUROWN',
+        apiKey: '',
         showSourceTitle: true,
         showPublishDate: true
       }

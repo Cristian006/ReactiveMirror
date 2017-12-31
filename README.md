@@ -1,4 +1,4 @@
-# Reactive Mirror
+![Reactive Mirror Demo](./assets/LogoBlack.png)
 
 ### An application built with React + Electron meant to run on the Raspberry Pi for a DIY Smart Mirror modeled after [Magic Mirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
 
@@ -14,10 +14,6 @@
 [![Yarn](/internals/img/yarn-padded-90.png)](https://yarnpkg.com/)
 
 [Electron](http://electron.atom.io/) mirror application based on [React](https://facebook.github.io/react/), [Redux](https://github.com/reactjs/redux), [React Router](https://github.com/reactjs/react-router), [Webpack](http://webpack.github.io/docs/), [React Transform HMR](https://github.com/gaearon/react-transform-hmr) for rapid application development.
-
-## Screenshot
-
-![Reactive Mirror Demo](./assets/LogoBlack.png)
 
 ## Install
 
