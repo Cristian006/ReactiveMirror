@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# This is an installer script for MagicMirror2. It works well enough
+# This is an installer script for ReactiveMirror. It works well enough
 # that it can detect if you have Node installed, run a binary script
-# and then download and run MagicMirror2.
+# and then download and run ReactiveMirror
 
 echo -e "\e[0m"
 echo ' /$$$$$$$                                  /$$     /$$                     '
@@ -24,7 +24,7 @@ echo '         |__/     |__/|__/|__/      |__/       \______/ |__/      '
 echo -e "\e[0m"
 
 # Define the tested version of Node.js.
-NODE_TESTED="v7.10.0"
+NODE_TESTED="v8.0.0"
 
 # Determine which Pi is running.
 ARM=$(uname -m) 
@@ -87,7 +87,7 @@ if $NODE_INSTALL; then
 	# The NODE_STABLE_BRANCH variable will need to be manually adjusted when a new branch is released. (e.g. 7.x)
 	# Only tested (stable) versions are recommended as newer versions could break ReactiveMirror.
 	
-	NODE_STABLE_BRANCH="7.x"
+	NODE_STABLE_BRANCH="8.x"
 	curl -sL https://deb.nodesource.com/setup_$NODE_STABLE_BRANCH | sudo -E bash -
 	sudo apt-get install -y nodejs
 	echo -e "\e[92mNode.js installation Done!\e[0m"
@@ -132,8 +132,8 @@ echo -e "\e[96mInstalling app dependencies ...\e[90m"
 if npm install; then 
 	echo -e "\e[92mApp dependencies installation Done!\e[0m"
 else
-	echo -e "\e[91mUnable to install app dependencies!"
-	exit;
+	echo -e "\e[91mUnable to install all app dependencies!"
+	echo -e "\e[91mCarrying on installation ...\e[90m"
 fi
 
 # Check if plymouth is installed (default with PIXEL desktop environment), then install custom splashscreen.
