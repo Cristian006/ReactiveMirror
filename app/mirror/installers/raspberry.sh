@@ -165,13 +165,13 @@ else
 fi
 
 # Use pm2 control like a service ReactiveMirror
-read -p "Do you want use pm2 for auto starting of your ReactiveMirror (y/n)?" choice
-if [[ $choice =~ ^[Yy]$ ]]; then
-    sudo npm install -g pm2
-    sudo su -c "env PATH=$PATH:/usr/bin pm2 startup linux -u pi --hp /home/pi"
-    pm2 start ~/ReactiveMirror/app/mirror/installers/pm2_ReactiveMirror.json
-    pm2 save
-fi
+#read -p "Do you want use pm2 for auto starting of your ReactiveMirror (y/n)?" choice
+#if [[ $choice =~ ^[Yy]$ ]]; then
+sudo npm install -g pm2
+sudo su -c "env PATH=$PATH:/usr/bin pm2 startup linux -u pi --hp /home/pi"
+pm2 start ~/ReactiveMirror/app/mirror/installers/pm2_ReactiveMirror.json
+pm2 save
+#fi
 
 echo " "
 echo -e "\e[92mWe're ready! Run \e[1m\e[97mDISPLAY=:0 npm start\e[0m\e[92m from the ~/ReactiveMirror directory to start your ReactiveMirror.\e[0m"
