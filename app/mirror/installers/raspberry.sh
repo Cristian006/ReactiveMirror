@@ -147,7 +147,7 @@ if command_exists plymouth; then
 			sudo mkdir $THEME_DIR/ReactiveMirror
 		fi
 
-		if sudo cp ~/ReactiveMirror/app/mirror/splashscreen/splash.png $THEME_DIR/ReactiveMirror/splash.png && sudo cp ~/ReactiveMirror/splashscreen/ReactiveMirror.plymouth $THEME_DIR/ReactiveMirror/ReactiveMirror.plymouth && sudo cp ~/ReactiveMirror/splashscreen/ReactiveMirror.script $THEME_DIR/ReactiveMirror/ReactiveMirror.script; then
+		if sudo cp ~/ReactiveMirror/app/mirror/splashscreen/splash.png $THEME_DIR/ReactiveMirror/splash.png && sudo cp ~/ReactiveMirror/app/mirror/splashscreen/ReactiveMirror.plymouth $THEME_DIR/ReactiveMirror/ReactiveMirror.plymouth && sudo cp ~/ReactiveMirror/app/mirror/splashscreen/ReactiveMirror.script $THEME_DIR/ReactiveMirror/ReactiveMirror.script; then
 			echo -e "\e[90mSplashscreen: Theme copied successfully.\e[0m"
 			if sudo plymouth-set-default-theme -R ReactiveMirror; then
 				echo -e "\e[92mSplashscreen: Changed theme to ReactiveMirror successfully.\e[0m"
@@ -169,7 +169,7 @@ read -p "Do you want use pm2 for auto starting of your ReactiveMirror (y/n)?" ch
 if [[ $choice =~ ^[Yy]$ ]]; then
     sudo npm install -g pm2
     sudo su -c "env PATH=$PATH:/usr/bin pm2 startup linux -u pi --hp /home/pi"
-    pm2 start ~/ReactiveMirror/installers/pm2_ReactiveMirror.json
+    pm2 start ~/ReactiveMirror/app/mirror/installers/pm2_ReactiveMirror.json
     pm2 save
 fi
 
