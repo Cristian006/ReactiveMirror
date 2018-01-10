@@ -114,6 +114,7 @@ else
 fi
 
 cd ~/ReactiveMirror || exit
+
 # Use sample config for start ReactiveMirror
 cp app/mirror/config/config.js.sample app/mirror/config/config.js
 echo -e "\e[92mCreated mirror config from sample!\e[0m"
@@ -164,14 +165,14 @@ else
 	echo -e "\e[93mplymouth is not installed.\e[0m";
 fi
 
-# Use pm2 control like a service ReactiveMirror
-#read -p "Do you want use pm2 for auto starting of your ReactiveMirror (y/n)?" choice
-#if [[ $choice =~ ^[Yy]$ ]]; then
-sudo npm install -g pm2
-sudo su -c "env PATH=$PATH:/usr/bin pm2 startup systemd -u pi --hp /home/pi"
-pm2 start ~/ReactiveMirror/app/mirror/installers/pm2_ReactiveMirror.json
-pm2 save
-#fi
+# Use pm2 control ReactiveMirror like a service 
+read -p "Do you want use pm2 to auto start your ReactiveMirror (y/n)?" choice
+if [[ $choice =~ ^[Yy]$ ]]; then
+	sudo npm install -g pm2
+	sudo su -c "env PATH=$PATH:/usr/bin pm2 startup systemd -u pi --hp /home/pi"
+	pm2 start ~/ReactiveMirror/app/mirror/installers/pm2_ReactiveMirror.json
+	pm2 save
+fi
 
 echo " "
 echo -e "\e[92mWe're ready! Run \e[1m\e[97mDISPLAY=:0 npm start\e[0m\e[92m from the ~/ReactiveMirror directory to start your ReactiveMirror.\e[0m"

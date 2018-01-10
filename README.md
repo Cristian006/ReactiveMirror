@@ -2,7 +2,42 @@
 
 ### An application built with React + Electron meant to run on the Raspberry Pi for a DIY Smart Mirror modeled after [Magic Mirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
 
-<br/>
+Every module is just a react component that's dynamically imported into the app
+
+## Usage
+
+### Tested Hardware
+
+* Raspberry Pi 3
+
+### Automatic Installation (Raspberry Pi 3)
+
+Run the following command on your Raspberry Pi to install Reactive Mirror
+
+```
+curl -sL https://raw.githubusercontent.com/Cristian006/ReactiveMirror/master/app/mirror/installers/raspberry.sh | bash
+```
+
+### Manual Installation
+
+```
+# Download and install the latest Node.js version
+
+git clone https://github.com/Cristian006/ReactiveMirror
+
+# install app module dependencies
+cd ~/ReactiveMirror/app
+npm install
+
+# install app dependencies
+cd ~/ReactiveMirror
+npm install
+
+# start the application
+npm start
+```
+
+# Development
 
 [![React](/internals/img/react-padded-90.png)](https://facebook.github.io/react/)
 [![Webpack](/internals/img/webpack-padded-90.png)](https://webpack.github.io/)
@@ -25,7 +60,7 @@ First, clone the repo via git:
 git clone --depth=1 https://github.com/cristian006/ReactiveMirror.git your-project-name
 ```
 
-And then install dependencies with yarn.
+And then install dependencies with yarn or npm
 
 ```bash
 $ cd your-project-name
@@ -33,6 +68,7 @@ $ yarn
 $ cd app
 $ yarn //to install mirror module dependencies
 ```
+
 **Note**: If you can't use [yarn](https://github.com/yarnpkg/yarn) for some reason, try `npm install`.
 
 ## Run
@@ -49,6 +85,28 @@ Run these two commands __simultaneously__ in different console tabs:
 $ npm run start-renderer-dev
 $ npm run start-main-dev
 ```
+
+Module configuration:
+
+| **Option** | **Description** |
+| --- | --- |
+| `name` | The name of the module. This can also contain the subfolder. Valid examples include `Clock`, `Calendar` and `CustomModule`. |
+| `position` | The location of the module in which the module will be loaded. Possible values are `top_ bar`, `top_left`, `top_center`, `top_right`, `upper_third`, `middle_center`, `lower_third`, `bottom_left`, `bottom_center`, `bottom_right`, `bottom_bar`, `fullscreen_above`, and `fullscreen_below`. This field is optional but most modules require this field to set. Check the documentation of the module for more information. Multiple modules with the same position will be ordered based on the order in the configuration file. |
+| `hide` | Set hide to `true` to skip creating the module. This field is optional. |
+| `config` | An object with the module configuration properties. Check the documentation of the module for more information. This field is optional, unless the module requires extra configuration. |
+
+## Modules
+
+The following modules are installed by default.
+
+- [**Clock**](app/mirror/modules/default/Clock)
+- [**Calendar**](app/mirror/modules/default/Calendar)
+- [**Current Weather**](app/mirror/modules/default/Currentweather)
+- [**Weather Forecast**](app/mirror/modules/default/WeatherForecast)
+- [**News Feed**](app/mirror/modules/default/NewsFeed)
+- [**Compliments**](app/mirror/modules/default/Compliments)
+- [**Snow**](app/mirror/modules/default/Snow)
+- [**Jokes**](app/mirror/modules/default/Jokes)
 
 ## Editor Configuration
 **Atom**
@@ -91,8 +149,6 @@ apm install editorconfig es6-javascript atom-ternjs javascript-snippets linter l
 *See [electron-debug](https://github.com/sindresorhus/electron-debug) for more information.*
 
 #### DevTools extension
-
-This boilerplate includes the following DevTools extensions:
 
 * [Devtron](https://github.com/electron/devtron) - Install via [electron-debug](https://github.com/sindresorhus/electron-debug).
 * [React Developer Tools](https://github.com/facebook/react-devtools) - Install via [electron-devtools-installer](https://github.com/GPMDP/electron-devtools-installer).
@@ -189,7 +245,7 @@ You will need to add other modules to this boilerplate, depending on the require
 
 ### Module Structure
 
-This boilerplate uses a [two package.json structure](https://github.com/electron-userland/electron-builder/wiki/Two-package.json-Structure). This means, you will have two `package.json` files.
+This app uses a [two package.json structure](https://github.com/electron-userland/electron-builder/wiki/Two-package.json-Structure). This means, you will have two `package.json` files.
 
 1. `./package.json` in the root of your project
 1. `./app/package.json` inside `app` folder
