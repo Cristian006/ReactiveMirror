@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import type { Children } from 'react';
-
+//TODO: REMOVE MOUSE HIDING SINCE IT'S HANDLED BY RASPBERRY PI
 export default class App extends Component {
   props: {
     children: Children

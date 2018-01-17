@@ -22,7 +22,7 @@ export function shorten(stringToShorten: string, maxLength: number = 25, wrapEve
   }
 
   if (stringToShorten.length > maxLength) {
-    return `${stringToShorten.trim().slice(0, maxLength)}&hellip;`;
+    return `${stringToShorten.trim().slice(0, maxLength)}${String.fromCharCode(8230)}`;
   }
 
   return stringToShorten.trim();
