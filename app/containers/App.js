@@ -70,7 +70,7 @@ export default class App extends Component {
     };
 
     return (
-      <div style={{ position: 'relative', width: '100vw', height: '100vh', cursor: this.state.cursorVisible ? 'default' : 'none' }} onMouseMove={this.mouseMove}>
+      <div style={{ position: 'relative', width: '100vw', height: '100vh' }} onMouseMove={this.mouseMove}>
         {this.props.children}
         <div style={configStyle}>
           <i className="fa fa-cog" />
